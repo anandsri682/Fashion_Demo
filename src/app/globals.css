@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #C41E3A #FAF8F5;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C41E3A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #99002B;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAF8F5;
+  color: #1C1B20;
+  font-family: var(--font-body), "Plus Jakarta Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #C41E3A;
+  outline-offset: 3px;
+}
+
+.container-x {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+.font-editorial {
+  font-family: var(--font-display), "Playfair Display", Georgia, serif;
+}
+
+/* Subtle image scale transition */
+.img-zoom {
+  @apply transition-transform duration-700 ease-smooth hover:scale-105;
+}
+
+/* Custom Glassmorphism Header */
+.header-glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Crimson Accent Underline animation */
+.hover-underline-gold, .hover-underline-crimson {
+  position: relative;
+}
+.hover-underline-gold::after, .hover-underline-crimson::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #C41E3A;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-underline-gold:hover::after, .hover-underline-crimson:hover::after {
+  width: 100%;
+}
+
+/* Reference Image Dashed Border Cards */
+.border-dashed-card {
+  border: 1px dashed #C41E3A;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.border-dashed-card:hover {
+  border-style: solid;
+  box-shadow: 0 10px 25px -5px rgba(196, 30, 58, 0.15);
+}
+
+/* Crimson Gradient */
+.bg-crimson-gradient {
+  background: linear-gradient(135deg, #C41E3A 0%, #99002B 100%);
+}
+
+.bg-crimson-soft {
+  background-color: #FDF0F3;
+}
+
+

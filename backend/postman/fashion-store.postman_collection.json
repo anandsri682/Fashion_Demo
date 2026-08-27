@@ -1,0 +1,495 @@
+{
+  "info": {
+    "name": "Fashion Store API",
+    "description": "Complete collection for the Fashion Store backend API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "addressId", "value": "" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('token', pm.response.json().token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Anand\",\n  \"lastName\": \"Raju\",\n  \"email\": \"user@example.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) { pm.collectionVariables.set('token', pm.response.json().token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) { pm.collectionVariables.set('adminToken', pm.response.json().token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@fashionstore.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": { "method": "GET", "url": "{{baseUrl}}/products?page=1&limit=20" }
+        },
+        {
+          "name": "Get Product By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/products/{{productId}}" }
+        },
+        {
+          "name": "Get Product By Slug",
+          "request": { "method": "GET", "url": "{{baseUrl}}/products/slug/classic-oxford-shirt" }
+        },
+        {
+          "name": "Get Products By Category",
+          "request": { "method": "GET", "url": "{{baseUrl}}/products/category/shirts" }
+        },
+        {
+          "name": "Create Product (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('productId', pm.response.json().product._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/products",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Classic Oxford Shirt", "type": "text" },
+                { "key": "description", "value": "A timeless slim-fit Oxford shirt.", "type": "text" },
+                { "key": "category", "value": "shirts", "type": "text" },
+                { "key": "gender", "value": "men", "type": "text" },
+                { "key": "price", "value": "1499", "type": "text" },
+                { "key": "stock", "value": "40", "type": "text" },
+                { "key": "sizes", "value": "S,M,L,XL", "type": "text" },
+                { "key": "colors", "value": "White,Blue,Black", "type": "text" },
+                { "key": "images", "type": "file", "src": [] }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Product (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/products/{{productId}}",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "price", "value": "1299", "type": "text" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Product (Admin, soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/products/{{productId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/cart"
+          }
+        },
+        {
+          "name": "Add To Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cart",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 2,\n  \"size\": \"M\",\n  \"color\": \"Black\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Cart Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cart/:itemId",
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 3\n}" }
+          }
+        },
+        {
+          "name": "Remove Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/cart/:itemId"
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/cart"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "Create Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('addressId', pm.response.json().address._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/addresses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Anand\",\n  \"lastName\": \"Raju\",\n  \"phone\": \"9876543210\",\n  \"email\": \"user@example.com\",\n  \"addressLine1\": \"123 Main St\",\n  \"city\": \"Hyderabad\",\n  \"state\": \"Telangana\",\n  \"country\": \"India\",\n  \"pincode\": \"500001\",\n  \"isDefault\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "List Addresses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/addresses"
+          }
+        },
+        {
+          "name": "Get Address",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/addresses/{{addressId}}"
+          }
+        },
+        {
+          "name": "Update Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/addresses/{{addressId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"city\": \"Bengaluru\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Address",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/addresses/{{addressId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "Get Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/wishlist"
+          }
+        },
+        {
+          "name": "Add To Wishlist",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/wishlist/{{productId}}"
+          }
+        },
+        {
+          "name": "Remove From Wishlist",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/wishlist/{{productId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('orderId', pm.response.json().order._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [{ \"productId\": \"{{productId}}\", \"quantity\": 2, \"size\": \"M\", \"color\": \"Black\" }],\n  \"shippingAddressId\": \"{{addressId}}\",\n  \"billingAddressId\": \"{{addressId}}\",\n  \"paymentMethod\": \"COD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List My Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/orders"
+          }
+        },
+        {
+          "name": "Get My Order",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/orders/{{orderId}}"
+          }
+        },
+        {
+          "name": "Cancel My Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/orders/{{orderId}}/cancel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/dashboard"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Products",
+      "item": [
+        {
+          "name": "List All Products (incl. inactive)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/products"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Orders",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/orders?page=1&limit=20"
+          }
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/orders/{{orderId}}"
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/orders/{{orderId}}/status",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"SHIPPED\"\n}" }
+          }
+        },
+        {
+          "name": "Update Delivery Date",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/orders/{{orderId}}/delivery-date",
+            "body": { "mode": "raw", "raw": "{\n  \"expectedDeliveryDate\": \"2026-08-20\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/users?page=1&limit=20"
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/admin/users/:id"
+          }
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/users/:id/status",
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}
