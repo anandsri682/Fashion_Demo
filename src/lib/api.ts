@@ -78,36 +78,48 @@ export async function apiFetch<T>(
 
   const baseUrl = getApiUrl();
 
-  const response = await fetch(`${baseUrl}${path}`, {
-    ...rest,
-    headers: finalHeaders,
-    body,
-  });
+  const controller = typeof window === "undefined" ? new AbortController() : null;
+  const timeoutId = controller ? setTimeout(() => controller.abort(), 3500) : null;
 
-  if (!response.ok) {
-    let message = response.statusText;
+  try {
+    const response = await fetch(`${baseUrl}${path}`, {
+      ...rest,
+      headers: finalHeaders,
+      body,
+      signal: controller ? controller.signal : rest.signal,
+    });
 
-    try {
-      const responseBody = await response.json();
+    if (timeoutId) clearTimeout(timeoutId);
 
-      message =
-        responseBody?.message ||
-        responseBody?.error?.message ||
-        responseBody?.data?.message ||
-        message;
-    } catch {
-      // Ignore non-JSON response
+
+    if (!response.ok) {
+      let message = response.statusText;
+
+      try {
+        const responseBody = await response.json();
+
+        message =
+          responseBody?.message ||
+          responseBody?.error?.message ||
+          responseBody?.data?.message ||
+          message;
+      } catch {
+        // Ignore non-JSON response
+      }
+
+      throw new ApiError(message, response.status);
     }
 
-    throw new ApiError(message, response.status);
-  }
+    if (response.status === 204) {
+      return undefined as T;
+    }
 
-  if (response.status === 204) {
-    return undefined as T;
+    return (await response.json()) as T;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
   }
-
-  return (await response.json()) as T;
 }
+
 
 export const api = {
   get: async <T>(path: string): Promise<T> => {
