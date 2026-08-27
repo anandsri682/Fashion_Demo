@@ -84,33 +84,30 @@ export function CartSummary({ totals, ctaLabel }: { totals: CartTotals; ctaLabel
         )}
       </form>
 
-      <div className="space-y-3.5 text-xs sm:text-sm font-body">
-        <div className="flex justify-between text-graphite">
-          <span>Items Subtotal</span>
-          <span className="font-mono text-ink font-bold">{formatCurrency(totals.subtotal)}</span>
-        </div>
-        {totals.discount > 0 && (
-          <div className="flex justify-between text-primary font-bold">
-            <span>Coupon Discount</span>
-            <span className="font-mono">-{formatCurrency(totals.discount)}</span>
-          </div>
-        )}
-        <div className="flex justify-between text-graphite">
-          <span>Insured Shipping</span>
-          <span className="font-mono text-ink font-bold">
-            {totals.shipping === 0 ? <span className="text-primary uppercase text-[10px] tracking-wider font-bold">FREE</span> : formatCurrency(totals.shipping)}
-          </span>
-        </div>
-        <div className="flex justify-between text-graphite">
-          <span>Estimated Tax (5%)</span>
-          <span className="font-mono text-ink font-bold">{formatCurrency(totals.tax)}</span>
-        </div>
-        <div className="flex justify-between border-t border-stone/60 pt-4 text-base font-bold text-ink">
-          <span>Estimated Total</span>
-          <span className="font-mono text-primary">{formatCurrency(totals.total)}</span>
-        </div>
+      {/* Savings Banner matching reference mockup */}
+      <div className="mb-5 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[10px]">✓</span>
+        <span>You will save {formatCurrency((totals.discount || 0) + (totals.subtotal * 0.2))} on this order</span>
       </div>
 
+      <div className="space-y-3 text-xs text-slate-700 font-body">
+        <div className="flex justify-between">
+          <span className="font-medium text-slate-600">Total MRP*</span>
+          <span className="font-mono text-slate-900 font-bold">{formatCurrency(totals.subtotal + (totals.subtotal * 0.2))}</span>
+        </div>
+        <div className="flex justify-between text-emerald-700 font-bold">
+          <span>Discount on MRP*</span>
+          <span className="font-mono">-{formatCurrency((totals.discount || 0) + (totals.subtotal * 0.2))}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium text-slate-600">Delivery Charges</span>
+          <span className="font-mono text-emerald-600 font-bold uppercase text-[11px]">FREE</span>
+        </div>
+        <div className="flex justify-between border-t border-slate-200 pt-3 text-sm font-extrabold text-slate-900">
+          <span>Total Amount</span>
+          <span className="font-mono text-rose-600">{formatCurrency(totals.total)}</span>
+        </div>
+      </div>
 
       <div className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-luxury text-ash pt-4 border-t border-stone/40">
         <ShieldCheck className="h-3.5 w-3.5 text-brass" />

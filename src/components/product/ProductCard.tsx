@@ -50,109 +50,84 @@ export function ProductCard({ product }: { product: Product }) {
     <>
       <div className="group relative flex flex-col transition-all duration-300">
         {/* Product Image Area */}
-        <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden bg-stone border border-stone/50 rounded-sm">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100 rounded-2xl border border-slate-100 shadow-xs group-hover:shadow-md transition-all duration-300">
           <Link href={`/products/${product.id}`} className="block h-full w-full">
             <Image
               src={primaryImage}
               alt={product.images[0]?.alt || product.title}
               fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-700 ease-smooth group-hover:scale-105"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             {secondaryImage && (
               <Image
                 src={secondaryImage}
                 alt={product.title}
                 fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className="object-cover opacity-0 transition-opacity duration-700 ease-smooth group-hover:opacity-100"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
               />
             )}
           </Link>
 
-          {/* Badges */}
-          <div className="absolute left-2.5 top-2.5 z-10 flex flex-col gap-1 pointer-events-none">
-            {product.isNewArrival && (
-              <span className="bg-ink text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider shadow-xs">
+          {/* Badges Top-Left */}
+          <div className="absolute left-2 top-2 z-10 flex flex-col gap-1 pointer-events-none">
+            {calculatedDiscount ? (
+              <span className="bg-rose-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow-xs tracking-tight">
+                -{calculatedDiscount}%
+              </span>
+            ) : product.isNewArrival ? (
+              <span className="bg-slate-900 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow-xs tracking-tight">
                 NEW
               </span>
-            )}
-            {calculatedDiscount && (
-              <span className="bg-crimson-gradient text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider shadow-xs">
-                -{calculatedDiscount}% OFF
-              </span>
-            )}
-            {product.isFeatured && (
-              <span className="bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider shadow-xs">
-                FEATURED
-              </span>
-            )}
+            ) : null}
           </div>
 
-          {/* Wishlist Button */}
+          {/* Wishlist Button Top-Right */}
           <button
             onClick={() => toggle(product.id)}
             aria-label="Toggle wishlist"
-            className="absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-paper-pure/90 backdrop-blur-xs text-ink transition-all duration-200 hover:scale-110 hover:bg-paper shadow-subtle"
+            className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-xs text-slate-700 transition-all duration-200 hover:scale-110 shadow-sm"
           >
             <Heart
               className={
                 wishlisted
-                  ? "h-4 w-4 fill-primary text-primary animate-heartPulse"
-                  : "h-4 w-4 text-graphite hover:text-primary transition-colors"
+                  ? "h-4 w-4 fill-rose-600 text-rose-600 animate-heartPulse"
+                  : "h-4 w-4 text-slate-600 hover:text-rose-600 transition-colors"
               }
             />
           </button>
-
-          {/* Quick Action Overlay on Hover */}
-          <div className="absolute inset-x-2 bottom-2 z-10 hidden translate-y-3 gap-1.5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 md:flex">
-            <button
-              onClick={() => setQuickView(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 bg-paper-pure/95 backdrop-blur-xs py-2 text-[11px] font-bold uppercase tracking-wider text-ink hover:bg-primary hover:text-white transition-all shadow-subtle rounded-xs"
-            >
-              <Eye className="h-3.5 w-3.5" /> Quick View
-            </button>
-            <button
-              onClick={handleQuickAdd}
-              className="flex items-center justify-center bg-primary text-white p-2 hover:bg-primary-dark transition-all shadow-subtle rounded-xs"
-              title="Add to Bag"
-            >
-              <ShoppingBag className="h-4 w-4" />
-            </button>
-          </div>
         </div>
 
         {/* Product Details */}
-        <div className="mt-3 flex flex-col flex-1 justify-between">
+        <div className="mt-2.5 flex flex-col flex-1 justify-between px-0.5">
           <div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[10px] uppercase tracking-luxury font-bold text-primary">{product.category}</p>
-              {product.gender && (
-                <span className="text-[9px] uppercase tracking-wider text-ash font-mono">{product.gender}</span>
-              )}
-            </div>
-
-            <Link href={`/products/${product.id}`} className="group-hover:text-primary transition-colors">
-              <h3 className="mt-1 text-xs sm:text-sm font-semibold text-ink line-clamp-1">{product.title}</h3>
+            <Link href={`/products/${product.id}`} className="group-hover:text-rose-600 transition-colors">
+              <h3 className="text-xs sm:text-sm font-medium text-slate-800 line-clamp-1 tracking-tight">{product.title}</h3>
             </Link>
 
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-xs sm:text-sm font-bold text-ink">{formatCurrency(product.price)}</span>
+            <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs sm:text-sm font-bold text-slate-900">{formatCurrency(product.price)}</span>
               {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-[11px] text-ash line-through font-mono">{formatCurrency(product.originalPrice)}</span>
+                <span className="text-[11px] text-slate-400 line-through font-mono">{formatCurrency(product.originalPrice)}</span>
+              )}
+              {calculatedDiscount && (
+                <span className="text-[10px] font-bold text-rose-600">-{calculatedDiscount}%</span>
               )}
             </div>
-          </div>
 
-          {/* Colors/Sizes hint */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div className="mt-2 flex items-center gap-1">
-              <span className="text-[10px] text-ash font-mono uppercase tracking-wide">
-                Sizes: {product.sizes.join(", ")}
-              </span>
+            {/* Rating Pill */}
+            <div className="mt-1.5 flex items-center gap-1.5">
+              <div className="flex items-center gap-0.5 bg-emerald-700 text-white text-[10px] font-extrabold px-1.5 py-0.2 rounded">
+                <span>{product.rating || "4.2"}</span>
+                <span className="text-[9px]">★</span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono">({product.reviewCount || 128})</span>
+
             </div>
-          )}
+          </div>
         </div>
+
       </div>
 
       <QuickViewModal product={product} open={quickView} isOpen={quickView} onClose={() => setQuickView(false)} />

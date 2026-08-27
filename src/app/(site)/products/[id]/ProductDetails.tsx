@@ -16,8 +16,11 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { getImageUrl } from "@/lib/api";
 
 import { ProductShare } from "@/components/product/ProductShare";
+import { CustomerReviewsSection } from "@/components/product/CustomerReviewsSection";
+import { formatCategorySizeTitle } from "@/lib/sizeHelper";
 
 export function ProductDetails({ product, related }: { product: Product; related: Product[] }) {
+
   const [size, setSize] = useState<string | null>(null);
   const [color, setColor] = useState<string>(product.colors[0]);
   const [quantity, setQuantity] = useState(1);
@@ -152,7 +155,7 @@ export function ProductDetails({ product, related }: { product: Product; related
             <div className="mt-6">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-semibold uppercase tracking-luxury text-graphite">
-                  Select Size: {size ? <span className="text-ink font-bold">{size}</span> : <span className="text-ash font-normal">Select a size</span>}
+                  {formatCategorySizeTitle(product.category)}: {size ? <span className="text-ink font-bold">{size}</span> : <span className="text-ash font-normal">Select a size</span>}
                   {sizeError && <span className="text-error font-medium ml-2">— Required</span>}
                 </p>
                 <span className="text-[10px] text-ash tracking-wide font-mono">
@@ -178,9 +181,9 @@ export function ProductDetails({ product, related }: { product: Product; related
                         setQuantity(1);
                       }}
                       className={cn(
-                        "h-11 min-w-[50px] px-3 border text-xs font-mono transition-all duration-200 relative",
+                        "h-11 min-w-[50px] px-3 border text-xs font-mono transition-all duration-200 relative rounded-lg",
                         size === s
-                          ? "border-primary bg-primary/10 text-primary font-bold ring-1 ring-primary shadow-xs"
+                          ? "border-rose-600 bg-rose-50 text-rose-600 font-bold ring-1 ring-rose-600 shadow-xs"
                           : sOutOfStock
                           ? "border-stone/40 bg-stone/20 text-ash line-through opacity-60"
                           : "border-stone text-ink hover:border-graphite bg-paper"
@@ -197,7 +200,7 @@ export function ProductDetails({ product, related }: { product: Product; related
             {/* Quantity Selector */}
             <div className="mt-6">
               <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-luxury text-graphite">Quantity</p>
-              <div className="flex w-fit items-center border border-stone bg-paper-pure">
+              <div className="flex w-fit items-center border border-stone rounded-lg bg-paper-pure">
                 <button
                   className="px-4 py-2 text-graphite hover:text-ink transition-colors disabled:opacity-40"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -218,12 +221,12 @@ export function ProductDetails({ product, related }: { product: Product; related
               </div>
             </div>
 
-            {/* CTAs */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+            {/* Desktop Action Buttons */}
+            <div className="mt-8 hidden sm:flex flex-row gap-3">
               <Button
-                variant="gold"
+                variant="outline"
                 size="lg"
-                className="flex-1 justify-center gap-2 disabled:opacity-50"
+                className="flex-1 justify-center gap-2 border-rose-600 text-rose-600 hover:bg-rose-50 rounded-xl font-bold"
                 disabled={isOutOfStock}
                 onClick={handleAddToCart}
               >
@@ -231,23 +234,25 @@ export function ProductDetails({ product, related }: { product: Product; related
                 <span>{isOutOfStock ? "Out of Stock" : "Add to Bag"}</span>
               </Button>
               <Button
-                variant="outline"
+                variant="primary"
                 size="lg"
-                className="flex-1 justify-center disabled:opacity-50"
+                className="flex-1 justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md"
                 disabled={isOutOfStock}
                 onClick={handleBuyNow}
               >
+
                 <span>Buy Now</span>
               </Button>
               <button
                 onClick={() => toggle(product.id)}
                 aria-label="Toggle wishlist"
-                className="flex h-[52px] w-[52px] shrink-0 items-center justify-center border border-stone bg-paper hover:border-brass transition-all"
+                className="flex h-[52px] w-[52px] shrink-0 items-center justify-center border border-stone bg-paper rounded-xl hover:border-rose-600 transition-all"
               >
-                <Heart className={wishlisted ? "h-5 w-5 fill-brass text-brass" : "h-5 w-5 text-graphite"} />
+                <Heart className={wishlisted ? "h-5 w-5 fill-rose-600 text-rose-600" : "h-5 w-5 text-slate-600"} />
               </button>
             </div>
           </div>
+
 
 
           {/* Guarantees */}
@@ -306,21 +311,43 @@ export function ProductDetails({ product, related }: { product: Product; related
         </div>
       </div>
 
+      {/* Customer Reviews Section */}
+      <CustomerReviewsSection productId={product.id} rating={product.rating} reviewsCount={product.reviewCount} />
+
       {/* Related Products Rail */}
       {related.length > 0 && (
-        <section className="mt-24 pt-12 border-t border-stone/60">
-          <div className="mb-10">
-            <p className="text-[10px] uppercase tracking-widest2 text-brass font-semibold">Complete The Edit</p>
-            <h2 className="mt-1 font-editorial text-2xl sm:text-3xl text-ink font-semibold">You May Also Like</h2>
+        <section className="mt-16 pt-12 border-t border-slate-200">
+          <div className="mb-8">
+            <p className="text-[10px] uppercase tracking-widest text-rose-600 font-bold">Complete The Edit</p>
+            <h2 className="mt-1 font-editorial text-2xl sm:text-3xl text-slate-900 font-bold">You May Also Like</h2>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-4 sm:gap-x-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6">
             {related.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </section>
       )}
+
+      {/* Sticky Mobile Bottom Action Bar (Fixed to bottom above mobile nav) */}
+      <div className="fixed bottom-14 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 shadow-lg flex items-center gap-3 sm:hidden">
+        <button
+          onClick={handleAddToCart}
+          disabled={isOutOfStock}
+          className="flex-1 py-3 px-3 rounded-xl border-2 border-slate-900 text-slate-900 font-bold text-xs uppercase tracking-wider text-center active:scale-98 transition-transform disabled:opacity-50"
+        >
+          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+        </button>
+        <button
+          onClick={handleBuyNow}
+          disabled={isOutOfStock}
+          className="flex-1 py-3 px-3 rounded-xl bg-rose-600 text-white font-bold text-xs uppercase tracking-wider text-center active:scale-98 transition-transform shadow-md disabled:opacity-50"
+        >
+          Buy Now
+        </button>
+      </div>
     </div>
   );
 }
+
 

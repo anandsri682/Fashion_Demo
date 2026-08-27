@@ -344,7 +344,7 @@ export function ProductForm({
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {currentPresetObj.sizes.map((size) => {
             const isSelected = values.sizes.includes(size);
             return (
@@ -363,7 +363,29 @@ export function ProductForm({
               </button>
             );
           })}
+
+          {/* Custom Size Addition */}
+          <div className="flex items-center gap-1.5 ml-2 border-l border-stone/40 pl-3">
+            <input
+              type="text"
+              id="custom-size-input"
+              placeholder="+ Custom Size (e.g. 44)"
+              className="w-36 rounded-lg border border-stone bg-white px-2.5 py-1 text-xs font-mono text-ink focus:border-primary focus:outline-none"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const target = e.target as HTMLInputElement;
+                  const val = target.value.trim().toUpperCase();
+                  if (val && !values.sizes.includes(val)) {
+                    toggleSize(val);
+                    target.value = "";
+                  }
+                }
+              }}
+            />
+          </div>
         </div>
+
       </section>
 
       {/* VARIANT-LEVEL INVENTORY (STOCK PER SIZE) */}

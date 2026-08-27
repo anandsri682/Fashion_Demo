@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/Input";
 import { Smartphone, CreditCard, Wallet, Banknote } from "lucide-react";
 import { useState } from "react";
 
-const options: { value: PaymentMethod; label: string; icon: typeof Smartphone }[] = [
-  { value: "UPI", label: "UPI", icon: Smartphone },
-  { value: "CREDIT_CARD", label: "Credit Card", icon: CreditCard },
-  { value: "DEBIT_CARD", label: "Debit Card", icon: Wallet },
-  { value: "COD", label: "Cash on Delivery", icon: Banknote },
+const options: { value: PaymentMethod; label: string; subtext: string; icon: typeof Smartphone }[] = [
+  { value: "UPI", label: "UPI", subtext: "Google Pay, PhonePe, Paytm", icon: Smartphone },
+  { value: "CREDIT_CARD", label: "Credit / Debit Card", subtext: "Visa, Mastercard, RuPay", icon: CreditCard },
+  { value: "DEBIT_CARD", label: "Net Banking", subtext: "All major banks", icon: Wallet },
+  { value: "COD", label: "Cash on Delivery", subtext: "Pay at delivery", icon: Banknote },
 ];
 
 export function PaymentMethodSelector({
@@ -24,24 +24,43 @@ export function PaymentMethodSelector({
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="flex flex-col gap-3">
         {options.map((opt) => (
-          <button
+          <div
             key={opt.value}
+            role="button"
+            tabIndex={0}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "flex flex-col items-center gap-2 border px-3 py-5 text-xs",
-              value === opt.value ? "border-ink bg-ink text-paper" : "border-stone text-ink"
+              "flex items-center justify-between border rounded-2xl p-4 transition-all cursor-pointer bg-white shadow-xs",
+              value === opt.value
+                ? "border-rose-600 ring-2 ring-rose-500/20 bg-rose-50/20"
+                : "border-slate-200 hover:border-slate-300"
             )}
           >
-            <opt.icon className="h-5 w-5" />
-            {opt.label}
-          </button>
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "h-5 w-5 rounded-full border flex items-center justify-center transition-all",
+                  value === opt.value ? "border-rose-600 bg-rose-600 text-white" : "border-slate-300 bg-white"
+                )}
+              >
+                {value === opt.value && <span className="text-[10px] font-bold">✓</span>}
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">{opt.label}</h4>
+                <p className="text-[11px] text-slate-500">{opt.subtext}</p>
+              </div>
+            </div>
+
+            <opt.icon className="h-5 w-5 text-slate-400" />
+          </div>
         ))}
       </div>
 
       {(value === "CREDIT_CARD" || value === "DEBIT_CARD") && (
-        <div className="mt-6 grid grid-cols-1 gap-4 border border-stone p-5 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 border border-slate-200 rounded-2xl p-5 bg-white sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Input
               label="Card Number"
@@ -64,30 +83,15 @@ export function PaymentMethodSelector({
             value={card.cvv}
             onChange={(e) => setCard((c) => ({ ...c, cvv: e.target.value }))}
           />
-          <div className="sm:col-span-2">
-            <Input
-              label="Card Holder Name"
-              value={card.name}
-              onChange={(e) => setCard((c) => ({ ...c, name: e.target.value }))}
-            />
-          </div>
-          <p className="text-[11px] text-ash sm:col-span-2">
-            This is a UI-only demo. Card details are never stored or transmitted.
-          </p>
         </div>
       )}
 
       {value === "UPI" && (
-        <div className="mt-6 border border-stone p-5">
-          <Input label="UPI ID" placeholder="yourname@upi" />
+        <div className="mt-4 border border-slate-200 rounded-2xl p-4 bg-white">
+          <Input label="Enter VPA / UPI ID" placeholder="username@okaxis or username@paytm" />
         </div>
-      )}
-
-      {value === "COD" && (
-        <p className="mt-4 text-sm text-ash">
-          Pay in cash when your order is delivered. A small COD handling fee may apply.
-        </p>
       )}
     </div>
   );
 }
+
