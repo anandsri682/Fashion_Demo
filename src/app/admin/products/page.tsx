@@ -46,13 +46,15 @@ export default function AdminProductsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this product? This cannot be undone.")) return;
     try {
+      setProducts((prev) => (prev ? prev.filter((p) => p.id !== id) : []));
       await productService.deleteProduct(id);
-      push("Product deleted");
-      load();
+      push("Product deleted successfully");
     } catch {
       push("Could not delete product", "error");
+      load();
     }
   }
+
 
   return (
     <div>

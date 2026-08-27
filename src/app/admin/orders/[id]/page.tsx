@@ -108,81 +108,81 @@ export default function AdminOrderDetailsPage() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="border border-stone p-5">
-              <p className="mb-2 text-[11px] uppercase tracking-widest text-ash">Customer</p>
-              <p className="text-sm text-ink">{order.customerName}</p>
-              <p className="text-sm text-ash">{order.customerEmail}</p>
-              <p className="text-sm text-ash">{order.customerPhone}</p>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <p className="mb-2 text-[11px] uppercase font-bold tracking-widest text-slate-400">Customer Details</p>
+              <p className="text-sm font-bold text-slate-900">{order.customerName}</p>
+              <p className="text-sm text-slate-600 font-mono mt-0.5">{order.customerEmail}</p>
+              <p className="text-sm text-slate-600 font-mono mt-0.5">{order.customerPhone}</p>
             </div>
-            <div className="border border-stone p-5">
-              <p className="mb-2 text-[11px] uppercase tracking-widest text-ash">Delivery</p>
-              <p className="text-sm text-ink">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <p className="mb-2 text-[11px] uppercase font-bold tracking-widest text-slate-400">Delivery Address</p>
+              <p className="text-sm font-medium text-slate-800 leading-relaxed">
                 {order.shippingAddress.addressLine1}, {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
                 {order.shippingAddress.pincode}
               </p>
-              <p className="mt-1 text-sm text-ash">Expected: {formatDate(order.expectedDelivery)}</p>
+              <p className="mt-2 text-xs font-mono text-rose-600 font-bold">Expected: {formatDate(order.expectedDelivery)}</p>
             </div>
           </div>
 
-          <div className="divide-y divide-stone border border-stone">
+          <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
             {order.items.map((item, i) => (
-              <div key={i} className="flex gap-4 p-4">
-                <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-stone">
+              <div key={i} className="flex gap-4 p-4 items-center">
+                <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-slate-100 rounded-xl border border-slate-200">
                   <Image src={item.image} alt={item.title} fill className="object-cover" sizes="64px" />
                 </div>
-                <div className="flex flex-1 justify-between">
+                <div className="flex flex-1 justify-between items-center">
                   <div>
-                    <p className="text-sm text-ink">{item.title}</p>
-                    <p className="mt-1 text-xs text-ash">
+                    <p className="text-sm font-bold text-slate-900">{item.title}</p>
+                    <p className="mt-1 text-xs text-slate-500 font-mono">
                       {item.size} · {item.color} · Qty {item.quantity}
                     </p>
                   </div>
-                  <span className="text-sm text-ink">{formatCurrency(item.price * item.quantity)}</span>
+                  <span className="text-sm font-extrabold text-slate-900">{formatCurrency(item.price * item.quantity)}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 border border-stone p-5 text-sm">
-            <div className="flex justify-between text-graphite">
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 text-xs shadow-xs space-y-2.5">
+            <div className="flex justify-between text-slate-600">
               <span>Subtotal</span>
-              <span>{formatCurrency(order.subtotal)}</span>
+              <span className="font-mono text-slate-900 font-bold">{formatCurrency(order.subtotal)}</span>
             </div>
             {order.discount > 0 && (
-              <div className="mt-2 flex justify-between text-brass-dark">
+              <div className="flex justify-between text-emerald-600 font-bold">
                 <span>Discount</span>
-                <span>-{formatCurrency(order.discount)}</span>
+                <span className="font-mono">-{formatCurrency(order.discount)}</span>
               </div>
             )}
-            <div className="mt-2 flex justify-between text-graphite">
+            <div className="flex justify-between text-slate-600">
               <span>Shipping</span>
-              <span>{order.shipping === 0 ? "Free" : formatCurrency(order.shipping)}</span>
+              <span className="font-mono text-slate-900 font-bold">{order.shipping === 0 ? "FREE" : formatCurrency(order.shipping)}</span>
             </div>
-            <div className="mt-2 flex justify-between text-graphite">
+            <div className="flex justify-between text-slate-600">
               <span>Tax</span>
-              <span>{formatCurrency(order.tax)}</span>
+              <span className="font-mono text-slate-900 font-bold">{formatCurrency(order.tax)}</span>
             </div>
-            <div className="mt-3 flex justify-between border-t border-stone pt-3 text-base text-ink">
+            <div className="flex justify-between border-t border-slate-200 pt-3 text-base font-extrabold text-slate-900">
               <span>Total</span>
-              <span>{formatCurrency(order.total)}</span>
+              <span className="font-mono text-rose-600">{formatCurrency(order.total)}</span>
             </div>
           </div>
 
-          <div className="mt-6 border border-stone p-5 text-sm">
-            <div className="flex justify-between text-graphite">
-              <span>Payment Method</span>
-              <span className="text-ink">{order.paymentMethod.replace("_", " ")}</span>
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 text-xs shadow-xs space-y-2">
+            <div className="flex justify-between">
+              <span className="text-slate-500 font-medium">Payment Method</span>
+              <span className="font-mono text-slate-900 font-bold uppercase">{order.paymentMethod.replace("_", " ")}</span>
             </div>
-            <div className="mt-2 flex justify-between text-graphite">
-              <span>Payment Status</span>
-              <span className="text-ink">{order.status === "Cancelled" ? "Refunded" : "Paid"}</span>
+            <div className="flex justify-between">
+              <span className="text-slate-500 font-medium">Payment Status</span>
+              <span className="font-mono text-emerald-600 font-bold uppercase">{order.status === "Cancelled" ? "Refunded" : "Paid"}</span>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="border border-stone p-6">
-            <h3 className="mb-4 font-display text-lg text-ink">Update Status</h3>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <h3 className="mb-4 text-sm font-bold text-slate-900 uppercase tracking-wider">Update Status</h3>
             <Select label="Order Status" value={statusDraft} onChange={(e) => setStatusDraft(e.target.value as OrderStatus)}>
               {[...ORDER_STATUS_FLOW, "Cancelled" as const].map((s) => (
                 <option key={s} value={s}>
@@ -198,17 +198,18 @@ export default function AdminOrderDetailsPage() {
                 onChange={(e) => setDeliveryDraft(e.target.value)}
               />
             </div>
-            <Button className="mt-5 w-full" loading={saving} onClick={handleUpdate}>
+            <Button className="mt-5 w-full bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl py-3" loading={saving} onClick={handleUpdate}>
               Save Changes
             </Button>
           </div>
 
-          <div className="border border-stone p-6">
-            <h3 className="mb-6 font-display text-lg text-ink">Timeline</h3>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <h3 className="mb-6 text-sm font-bold text-slate-900 uppercase tracking-wider">Timeline</h3>
             <OrderTimeline status={order.status} />
           </div>
         </div>
       </div>
+
     </div>
   );
 }

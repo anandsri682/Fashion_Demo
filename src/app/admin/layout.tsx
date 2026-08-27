@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!ready) return <PageLoader />;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row pb-20 md:pb-0">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col md:flex-row pb-20 md:pb-0">
       {/* Mobile Top Admin Header */}
       <MobileAdminHeader />
 
@@ -37,5 +37,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Toaster />
     </div>
   );
+
 }
 
