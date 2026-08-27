@@ -23,14 +23,23 @@ export interface SubcategoryItem {
 
 export const categoryService = {
   async getPublicCategories(): Promise<{ categories: CategoryItem[]; subcategories: SubcategoryItem[] }> {
-    const res = await api.get<{ categories: CategoryItem[]; subcategories: SubcategoryItem[] }>('/categories');
-    return res;
+    try {
+      const res = await api.get<{ categories: CategoryItem[]; subcategories: SubcategoryItem[] }>('/categories');
+      return res || { categories: [], subcategories: [] };
+    } catch {
+      return { categories: [], subcategories: [] };
+    }
   },
 
   async getAdminCategories(): Promise<{ categories: CategoryItem[]; subcategories: SubcategoryItem[] }> {
-    const res = await api.get<{ categories: CategoryItem[]; subcategories: SubcategoryItem[] }>('/admin/categories');
-    return res;
+    try {
+      const res = await api.get<{ categories: CategoryItem[]; subcategories: SubcategoryItem[] }>('/admin/categories');
+      return res || { categories: [], subcategories: [] };
+    } catch {
+      return { categories: [], subcategories: [] };
+    }
   },
+
 
   async createCategory(data: Partial<CategoryItem>): Promise<CategoryItem> {
     const res = await api.post<{ category: CategoryItem }>('/admin/categories', data);

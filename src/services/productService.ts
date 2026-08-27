@@ -286,27 +286,37 @@ export const productService = {
   async getProducts(
     query: ProductQuery = {}
   ): Promise<PaginatedResult<Product>> {
-    const params = buildQueryParams(query);
-    const queryString = params.toString();
+    try {
+      const params = buildQueryParams(query);
+      const queryString = params.toString();
 
-    const response = await apiFetch<ProductListResponse>(
-      `/products${queryString ? `?${queryString}` : ""}`,
-      { auth: false }
-    );
+      const response = await apiFetch<ProductListResponse>(
+        `/products${queryString ? `?${queryString}` : ""}`,
+        { auth: false }
+      );
 
-    const products = (response.products || []).map(mapProduct);
-    const pagination = response.pagination || {};
-    const page = pagination.page || query.page || 1;
-    const pageSize = pagination.limit || query.pageSize || (products.length > 0 ? products.length : 12);
-    const total = pagination.total ?? pagination.totalItems ?? products.length;
+      const products = (response.products || []).map(mapProduct);
+      const pagination = response.pagination || {};
+      const page = pagination.page || query.page || 1;
+      const pageSize = pagination.limit || query.pageSize || (products.length > 0 ? products.length : 12);
+      const total = pagination.total ?? pagination.totalItems ?? products.length;
 
-    return {
-      items: products,
-      total,
-      page,
-      pageSize,
-    };
+      return {
+        items: products,
+        total,
+        page,
+        pageSize,
+      };
+    } catch (error) {
+      return {
+        items: [],
+        total: 0,
+        page: query.page || 1,
+        pageSize: query.pageSize || 12,
+      };
+    }
   },
+
 
   // -------------------------------------------------------------------------
   // GET /api/products/:id
@@ -453,7 +463,12 @@ export const productService = {
   // -------------------------------------------------------------------------
 
   async getAllForAdmin(): Promise<Product[]> {
-    const response = await apiFetch<ProductListResponse>("/admin/products?limit=100");
-    return (response.products || []).map(mapProduct);
+    try {
+      const response = await apiFetch<ProductListResponse>("/admin/products?limit=100");
+      return (response.products || []).map(mapProduct);
+    } catch {
+      return [];
+    }
   },
+
 };

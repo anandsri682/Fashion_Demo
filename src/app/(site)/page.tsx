@@ -5,7 +5,10 @@ import { PromoBanner } from "./_home/PromoBanner";
 import { Newsletter } from "./_home/Newsletter";
 import { productService } from "@/services/productService";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
+
   const [newArrivals, trending, featured, bestSellers] = await Promise.all([
     productService.getProducts({ collection: "new-arrivals", pageSize: 8 }),
     productService.getProducts({ sort: "popular", pageSize: 8 }),
