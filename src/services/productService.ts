@@ -453,10 +453,18 @@ export const productService = {
   // -------------------------------------------------------------------------
 
   async deleteProduct(id: string): Promise<void> {
-    await apiFetch(`/products/${id}`, {
-      method: "DELETE",
-    });
+    try {
+      await apiFetch(`/products/${id}`, {
+        method: "DELETE",
+      });
+    } catch {
+      // Fallback for admin endpoint if backend mounts DELETE under /api/admin/products/:id
+      await apiFetch(`/admin/products/${id}`, {
+        method: "DELETE",
+      });
+    }
   },
+
 
   // -------------------------------------------------------------------------
   // ADMIN: Get all products

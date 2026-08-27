@@ -28,7 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" translate="no" className="scroll-smooth">
+
       <body className={`${display.variable} ${body.variable} font-body bg-paper text-ink selection:bg-brass/20 selection:text-ink antialiased`}>
         {children}
         <Toaster />
