@@ -5,35 +5,46 @@ import { productService } from "@/services/productService";
 
 export const dynamic = "force-dynamic";
 
+
 export default async function HomePage() {
-  const [shirts, tshirts, pants, jeans, dresses, newArrivals, saleProducts] = await Promise.all([
-    productService.getProducts({ category: "Shirts", pageSize: 4 }),
-    productService.getProducts({ category: "T-Shirts", pageSize: 4 }),
-    productService.getProducts({ category: "Pants", pageSize: 4 }),
-    productService.getProducts({ category: "Jeans", pageSize: 4 }),
-    productService.getProducts({ category: "Dresses", pageSize: 4 }),
-    productService.getProducts({ collection: "new-arrivals", pageSize: 4 }),
-    productService.getProducts({ collection: "sale", pageSize: 4 }),
-  ]);
+  // Fetch ALL products from MongoDB Atlas
+  const allResult = await productService.getProducts({ pageSize: 50 });
+  const allProducts = allResult.items || [];
+
+  // Group products dynamically by category
+  const categories = Array.from(new Set(allProducts.map((p) => p.category).filter(Boolean)));
 
   return (
     <div>
       {/* Category Scroller Bar */}
       <CategoryScroller />
 
-      {/* Product-First Category Rails */}
-      <ProductRail title="Shirts" eyebrow="Wardrobe Essentials" products={shirts.items} viewAllHref="/products?category=Shirts" />
-      <ProductRail title="T-Shirts" eyebrow="Everyday Comfort" products={tshirts.items} viewAllHref="/products?category=T-Shirts" />
-      <ProductRail title="Pants & Trousers" eyebrow="Tailored Fits" products={pants.items} viewAllHref="/products?category=Pants" />
-      <ProductRail title="Denim & Jeans" eyebrow="Premium Selvedge" products={jeans.items} viewAllHref="/products?category=Jeans" />
-      <ProductRail title="Dresses" eyebrow="Couture Styles" products={dresses.items} viewAllHref="/products?category=Dresses" />
-      
+      {/* Primary Rail: All Products from Database */}
+      <ProductRail
+        title="All Products"
+        eyebrow="Explore Catalogue"
+        products={allProducts}
+        viewAllHref="/products"
+      />
+
+      {/* Dynamic Category Rails from MongoDB Atlas */}
+      {categories.map((cat) => {
+        const catProducts = allProducts.filter((p) => p.category === cat);
+        return (
+          <ProductRail
+            key={cat}
+            title={cat}
+            eyebrow="Category Edit"
+            products={catProducts}
+            viewAllHref={`/products?category=${encodeURIComponent(cat)}`}
+          />
+        );
+      })}
+
       {/* Secondary Promo Cards */}
       <PromoBanner />
-
-      <ProductRail title="New Arrivals" eyebrow="Just Dropped" products={newArrivals.items} viewAllHref="/new-arrivals" />
-      <ProductRail title="Special Offers" eyebrow="Limited Sale" products={saleProducts.items} viewAllHref="/products?collection=sale" />
     </div>
   );
 }
+
 

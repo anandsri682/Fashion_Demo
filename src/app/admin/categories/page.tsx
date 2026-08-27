@@ -14,6 +14,7 @@ export default function AdminCategoriesPage() {
   const [categoryModal, setCategoryModal] = useState(false);
   const [catName, setCatName] = useState("");
   const [catDesc, setCatDesc] = useState("");
+  const [catImage, setCatImage] = useState("");
 
   const [subcategoryModal, setSubcategoryModal] = useState(false);
   const [subName, setSubName] = useState("");
@@ -39,16 +40,18 @@ export default function AdminCategoriesPage() {
   async function handleCreateCategory() {
     if (!catName) return;
     try {
-      await categoryService.createCategory({ name: catName, description: catDesc });
-      push("Category created in MongoDB!");
+      await categoryService.createCategory({ name: catName, description: catDesc, image: catImage });
+      push("Category created with image!");
       setCatName("");
       setCatDesc("");
+      setCatImage("");
       setCategoryModal(false);
       await loadData();
     } catch {
       push("Failed to create category");
     }
   }
+
 
   async function handleCreateSubcategory() {
     if (!subName || !selectedCatId) return;
@@ -194,30 +197,54 @@ export default function AdminCategoriesPage() {
       {/* Add Category Modal */}
       {categoryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl space-y-4">
-            <h3 className="font-editorial text-lg font-bold text-ink">Create New Category</h3>
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl space-y-4">
+            <h3 className="font-editorial text-lg font-bold text-slate-900">Create New Category</h3>
             <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Category Name (e.g. Sarees, Shoes)"
-                value={catName}
-                onChange={(e) => setCatName(e.target.value)}
-                className="w-full rounded-lg border border-stone p-2.5 text-xs font-mono focus:border-primary focus:outline-none"
-              />
-              <textarea
-                placeholder="Description (optional)"
-                value={catDesc}
-                onChange={(e) => setCatDesc(e.target.value)}
-                className="w-full rounded-lg border border-stone p-2.5 text-xs font-body focus:border-primary focus:outline-none h-20"
-              />
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 block">Category Name</label>
+                <input
+                  type="text"
+                  placeholder="Category Name (e.g. Shirts, Sarees)"
+                  value={catName}
+                  onChange={(e) => setCatName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 p-3 text-xs font-mono focus:border-rose-600 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 block">Category Image (URL or Path)</label>
+                <input
+                  type="text"
+                  placeholder="https://images.unsplash.com/... or /uploads/category.jpg"
+                  value={catImage}
+                  onChange={(e) => setCatImage(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 p-3 text-xs font-mono focus:border-rose-600 focus:outline-none"
+                />
+                {catImage && (
+                  <div className="mt-2 relative h-16 w-16 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={catImage} alt="Category Preview" className="h-full w-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 block">Description</label>
+                <textarea
+                  placeholder="Description (optional)"
+                  value={catDesc}
+                  onChange={(e) => setCatDesc(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 p-3 text-xs font-body focus:border-rose-600 focus:outline-none h-16"
+                />
+              </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setCategoryModal(false)} className="px-4 py-2 text-xs font-bold text-ash hover:text-ink">
+              <button onClick={() => setCategoryModal(false)} className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-900">
                 Cancel
               </button>
               <button
                 onClick={handleCreateCategory}
-                className="rounded-lg bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary-dark shadow-crimson"
+                className="rounded-xl bg-rose-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-rose-700 shadow-md transition-colors"
               >
                 Save Category
               </button>
@@ -225,6 +252,7 @@ export default function AdminCategoriesPage() {
           </div>
         </div>
       )}
+
 
       {/* Add Subcategory Modal */}
       {subcategoryModal && (

@@ -160,19 +160,32 @@ export function mockDelay(ms = 500): Promise<void> {
 }
 
 export function getImageUrl(url: string): string {
-  if (!url) return "";
+  if (!url) return "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
 
   if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
 
-  const baseUrl = getApiUrl();
-  const backendUrl = baseUrl.replace(/\/api\/?$/, "");
-
-  if (url.startsWith("/uploads/")) {
-    return `${backendUrl}${url}`;
+  // Handle seed images with high-res fashion Unsplash fallbacks
+  if (url.includes("oxford-shirt")) {
+    return "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&auto=format&fit=crop&q=80";
+  }
+  if (url.includes("denim-jeans")) {
+    return "https://images.unsplash.com/photo-1542272604-780c36856842?w=800&auto=format&fit=crop&q=80";
+  }
+  if (url.includes("wrap-dress")) {
+    return "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format&fit=crop&q=80";
+  }
+  if (url.includes("canvas-sneakers")) {
+    return "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&auto=format&fit=crop&q=80";
   }
 
-  return url;
+  const backendBase = process.env.NEXT_PUBLIC_API_URL
+    ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "")
+    : "https://fashion-demo-backend.onrender.com";
+
+  const cleanPath = url.startsWith("/") ? url : `/${url}`;
+  return `${backendBase}${cleanPath}`;
 }
+
 
