@@ -6,9 +6,8 @@ import { useAuthStore } from "@/store/authStore";
 import { orderService } from "@/services/orderService";
 import { Order } from "@/types";
 import { useWishlistStore } from "@/store/wishlistStore";
-import { Package, Clock, CheckCircle2, Heart, MapPin, Settings, LogOut, Crown, ArrowRight } from "lucide-react";
+import { Package, Heart, Ticket, HelpCircle, ChevronRight, User, MapPin, CreditCard, Bell, Shield, LogOut, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { DashboardSkeleton } from "@/components/ui/Skeleton";
 
 export default function AccountOverviewPage() {
   const user = useAuthStore((s) => s.user);
@@ -23,126 +22,118 @@ export default function AccountOverviewPage() {
 
   if (!user) return null;
 
-  const stats = [
-    { label: "Total Orders", value: orders?.length ?? "—", icon: Package },
-    { label: "Active Orders", value: orders?.filter((o) => ["Pending", "Confirmed", "Processing"].includes(o.status)).length ?? "—", icon: Clock },
-    { label: "Delivered Orders", value: orders?.filter((o) => o.status === "Delivered").length ?? "—", icon: CheckCircle2 },
-    { label: "Wishlist Items", value: wishlistCount, icon: Heart },
-  ];
-
   return (
-    <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="border border-brass/30 bg-stone-light/40 p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+    <div className="space-y-6 pb-12">
+      {/* Profile Header */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-600 text-white font-bold text-xl uppercase shadow-md">
+          {user.firstName ? user.firstName[0] : "U"}
+        </div>
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <Crown className="h-4 w-4 text-brass" />
-            <p className="text-[10px] uppercase tracking-luxury font-semibold text-brass">Private Client</p>
+            <h2 className="text-base font-bold text-slate-900 truncate">
+              {user.firstName} {user.lastName}
+            </h2>
+            <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 border border-rose-200">
+              <Crown className="h-3 w-3" /> Gold VIP
+            </span>
           </div>
-          <h2 className="mt-1 font-editorial text-3xl font-light text-ink">
-            {user.firstName} {user.lastName}
-          </h2>
-          <p className="mt-1 text-xs font-mono text-ash">{user.email}</p>
-        </div>
-        <div className="border-t sm:border-t-0 sm:border-l border-stone/50 pt-3 sm:pt-0 sm:pl-6 text-xs text-graphite">
-          <p className="text-[10px] uppercase tracking-luxury text-ash font-semibold">Tier Status</p>
-          <p className="font-editorial text-lg font-medium text-brass">Privilège Member</p>
+          <p className="text-xs text-slate-500 font-mono mt-0.5 truncate">{user.email}</p>
         </div>
       </div>
 
-      {/* Stats Summary */}
-      <div>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-luxury text-ink border-b border-stone/40 pb-2">
-          Portfolio Overview
-        </h3>
-        {orders === null ? (
-          <DashboardSkeleton />
-        ) : (
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="border border-stone/50 bg-paper p-5 transition-all hover:border-brass hover:shadow-xs">
-                <s.icon className="h-5 w-5 text-brass" strokeWidth={1.5} />
-                <p className="mt-3 font-editorial text-3xl text-ink font-light">{s.value}</p>
-                <p className="mt-1 text-[10px] uppercase tracking-luxury font-semibold text-ash">{s.label}</p>
-              </div>
-            ))}
+      {/* 4 Shortcut Cards */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Link href="/account/orders" className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:border-rose-300 transition-all text-center group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-2 group-hover:scale-110 transition-transform">
+            <Package className="h-5 w-5" />
           </div>
-        )}
-      </div>
+          <span className="text-xs font-bold text-slate-900">ORDERS</span>
+          <span className="text-[10px] font-mono text-slate-400 mt-0.5">{orders?.length ?? 0} Placed</span>
+        </Link>
 
-      {/* Quick Navigation Cards */}
-      <div>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-luxury text-ink border-b border-stone/40 pb-2">
-          Quick Access
-        </h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Link
-            href="/account/orders"
-            className="group flex items-center justify-between border border-stone/50 bg-paper p-5 hover:border-brass transition-all hover-underline-gold"
-          >
-            <div className="flex items-center gap-3.5">
-              <Package className="h-5 w-5 text-brass" />
-              <div>
-                <span className="text-sm font-medium text-ink block">Order History</span>
-                <span className="text-[10px] text-ash tracking-wide">Track shipments & past acquisitions</span>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-ash group-hover:text-brass transition-transform group-hover:translate-x-1" />
-          </Link>
+        <Link href="/wishlist" className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:border-rose-300 transition-all text-center group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-2 group-hover:scale-110 transition-transform">
+            <Heart className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-bold text-slate-900">WISHLIST</span>
+          <span className="text-[10px] font-mono text-slate-400 mt-0.5">{wishlistCount} Saved</span>
+        </Link>
 
-          <Link
-            href="/account/addresses"
-            className="group flex items-center justify-between border border-stone/50 bg-paper p-5 hover:border-brass transition-all hover-underline-gold"
-          >
-            <div className="flex items-center gap-3.5">
-              <MapPin className="h-5 w-5 text-brass" />
-              <div>
-                <span className="text-sm font-medium text-ink block">Address Directory</span>
-                <span className="text-[10px] text-ash tracking-wide">Manage delivery locations</span>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-ash group-hover:text-brass transition-transform group-hover:translate-x-1" />
-          </Link>
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-xs text-center cursor-pointer hover:border-rose-300 transition-all group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-2 group-hover:scale-110 transition-transform">
+            <Ticket className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-bold text-slate-900">COUPONS</span>
+          <span className="text-[10px] font-mono text-slate-400 mt-0.5">2 Available</span>
+        </div>
 
-          <Link
-            href="/wishlist"
-            className="group flex items-center justify-between border border-stone/50 bg-paper p-5 hover:border-brass transition-all hover-underline-gold"
-          >
-            <div className="flex items-center gap-3.5">
-              <Heart className="h-5 w-5 text-brass" />
-              <div>
-                <span className="text-sm font-medium text-ink block">Curated Wishlist</span>
-                <span className="text-[10px] text-ash tracking-wide">{wishlistCount} saved creations</span>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-ash group-hover:text-brass transition-transform group-hover:translate-x-1" />
-          </Link>
-
-          <Link
-            href="/account/settings"
-            className="group flex items-center justify-between border border-stone/50 bg-paper p-5 hover:border-brass transition-all hover-underline-gold"
-          >
-            <div className="flex items-center gap-3.5">
-              <Settings className="h-5 w-5 text-brass" />
-              <div>
-                <span className="text-sm font-medium text-ink block">Account Preferences</span>
-                <span className="text-[10px] text-ash tracking-wide">Security & personal info</span>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-ash group-hover:text-brass transition-transform group-hover:translate-x-1" />
-          </Link>
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-xs text-center cursor-pointer hover:border-rose-300 transition-all group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-2 group-hover:scale-110 transition-transform">
+            <HelpCircle className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-bold text-slate-900">HELP CENTER</span>
+          <span className="text-[10px] font-mono text-slate-400 mt-0.5">24x7 Support</span>
         </div>
       </div>
 
-      <div className="pt-4 border-t border-stone/40">
-        <button
-          onClick={logout}
-          className="flex items-center gap-2 text-xs uppercase tracking-luxury font-semibold text-ash hover:text-error transition-colors"
-        >
-          <LogOut className="h-4 w-4" /> Terminate Session (Logout)
-        </button>
+      {/* Account Settings List */}
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+        <div className="bg-slate-50/80 px-4 py-2.5 border-b border-slate-100 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+          Account Settings
+        </div>
+        <div className="divide-y divide-slate-100">
+          <Link href="/account/settings" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+            <div className="flex items-center gap-3">
+              <User className="h-4 w-4 text-slate-500" />
+              <span className="text-xs font-bold text-slate-900">Edit Profile</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </Link>
+
+          <Link href="/account/addresses" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+            <div className="flex items-center gap-3">
+              <MapPin className="h-4 w-4 text-slate-500" />
+              <span className="text-xs font-bold text-slate-900">Saved Addresses</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </Link>
+
+          <div className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <CreditCard className="h-4 w-4 text-slate-500" />
+              <span className="text-xs font-bold text-slate-900">Saved Cards & UPI</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </div>
+
+          <div className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Bell className="h-4 w-4 text-slate-500" />
+              <span className="text-xs font-bold text-slate-900">Notification Settings</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </div>
+
+          <div className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Shield className="h-4 w-4 text-slate-500" />
+              <span className="text-xs font-bold text-slate-900">Privacy & Security</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400" />
+          </div>
+        </div>
       </div>
+
+      {/* Logout Action */}
+      <button
+        onClick={logout}
+        className="w-full rounded-2xl border border-rose-200 bg-rose-50/50 py-3.5 text-xs font-bold text-rose-600 hover:bg-rose-100/50 transition-colors flex items-center justify-center gap-2 shadow-xs"
+      >
+        <LogOut className="h-4 w-4" /> Logout from Account
+      </button>
     </div>
   );
 }
+
 

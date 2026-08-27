@@ -31,11 +31,13 @@ export type ProductCategory =
   | "T-Shirts"
   | "Shirts"
   | "Jeans"
+  | "Pants"
   | "Dresses"
   | "Jackets"
   | "Shoes"
   | "Knitwear"
   | "Accessories";
+
 
 export type ProductGender = "Men" | "Women" | "Kids" | "Unisex";
 

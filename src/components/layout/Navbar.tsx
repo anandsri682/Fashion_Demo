@@ -58,12 +58,13 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-40 w-full transition-all duration-300",
+          "sticky top-0 z-40 w-full transition-all duration-300 hidden lg:block",
           scrolled
             ? "header-glass border-b border-stone/60 shadow-subtle py-3.5"
             : "bg-paper-pure border-b border-stone/30 py-5"
         )}
       >
+
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Mobile Menu Toggle */}
           <button
