@@ -33,36 +33,41 @@ export function ProductFilters({
 
       {/* Category Section */}
       <div>
-        <h4 className="mb-3 text-[10px] font-bold uppercase tracking-wider text-primary">Category</h4>
-        <div className="flex flex-col gap-2">
+        <h4 className="mb-3 text-[10px] font-bold uppercase tracking-wider text-rose-600">Category</h4>
+        <div className="flex flex-col gap-1.5">
           <button
             onClick={() => onChange({ ...query, category: undefined })}
             className={cn(
-              "text-left text-xs transition-colors py-1 flex items-center justify-between",
-              !query.category ? "text-primary font-bold" : "text-graphite hover:text-primary"
+              "text-left text-xs transition-all py-1.5 px-3 rounded-lg flex items-center justify-between font-medium",
+              !query.category
+                ? "bg-rose-50 text-rose-600 font-bold border border-rose-200 shadow-2xs"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
             )}
           >
             <span>All Categories</span>
-            {!query.category && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+            {!query.category && <span className="h-2 w-2 rounded-full bg-rose-600 animate-pulse" />}
           </button>
           {CATEGORIES.map((c) => {
-            const isSelected = query.category === c;
+            const isSelected = query.category === c || query.category?.toLowerCase() === c.toLowerCase();
             return (
               <button
                 key={c}
-                onClick={() => onChange({ ...query, category: c })}
+                onClick={() => onChange({ ...query, category: isSelected ? undefined : (c as any) })}
                 className={cn(
-                  "text-left text-xs transition-colors py-1 flex items-center justify-between",
-                  isSelected ? "text-primary font-bold" : "text-graphite hover:text-primary"
+                  "text-left text-xs transition-all py-1.5 px-3 rounded-lg flex items-center justify-between font-medium",
+                  isSelected
+                    ? "bg-rose-600 text-white font-bold shadow-md shadow-rose-200"
+                    : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
                 <span>{c}</span>
-                {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+                {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
               </button>
             );
           })}
         </div>
       </div>
+
 
       {/* Size Filter */}
       <div>

@@ -9,6 +9,8 @@ import { ProductGrid } from "./ProductGrid";
 import { Button } from "@/components/ui/Button";
 import { SlidersHorizontal, X, ArrowDown } from "lucide-react";
 
+import { useRouter, usePathname } from "next/navigation";
+
 export function ProductListing({
   title,
   gender,
@@ -21,22 +23,50 @@ export function ProductListing({
   fixedCategory?: ProductQuery["category"];
 }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [extraQuery, setExtraQuery] = useState<ProductQuery>({});
+
+  const urlCategory = (searchParams.get("category") as ProductQuery["category"]) || undefined;
+  const activeCategory = extraQuery.category !== undefined ? extraQuery.category : (fixedCategory || urlCategory);
+
 
   const query: ProductQuery = useMemo(
     () => ({
       gender: gender || (searchParams.get("gender") as ProductQuery["gender"]) || undefined,
       collection: collection || searchParams.get("collection") || undefined,
-      category: fixedCategory || (searchParams.get("category") as ProductQuery["category"]) || undefined,
+      category: activeCategory,
       sort: (searchParams.get("sort") as ProductQuery["sort"]) || undefined,
       page,
-      pageSize: 12,
+      pageSize: 24,
       ...extraQuery,
     }),
-    [gender, collection, fixedCategory, searchParams, page, extraQuery]
+    [gender, collection, fixedCategory, activeCategory, searchParams, page, extraQuery]
   );
+
+  const handleFilterChange = (newQuery: ProductQuery) => {
+    setExtraQuery(newQuery);
+    setPage(1);
+
+    // Update URL query parameters seamlessly
+    const params = new URLSearchParams(searchParams.toString());
+    if (newQuery.category) {
+      params.set("category", newQuery.category);
+    } else {
+      params.delete("category");
+    }
+
+    if (newQuery.sort && newQuery.sort !== "featured") {
+      params.set("sort", newQuery.sort);
+    } else {
+      params.delete("sort");
+    }
+
+    router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
+  };
+
 
 
   const { data, status } = useProducts(query);
@@ -71,11 +101,8 @@ export function ProductListing({
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="sticky top-28">
             <ProductFilters
-              query={extraQuery}
-              onChange={(q) => {
-                setExtraQuery(q);
-                setPage(1);
-              }}
+              query={query}
+              onChange={handleFilterChange}
             />
           </div>
         </aside>
@@ -92,7 +119,7 @@ export function ProductListing({
                 size="lg"
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page >= totalPages}
-                className="gap-2 px-8 shadow-crimson rounded-full"
+                className="gap-2 px-8 shadow-crimson rounded-full font-bold"
               >
                 <span>Load More Creations</span>
                 <ArrowDown className="h-4 w-4" />
@@ -108,7 +135,7 @@ export function ProductListing({
       {/* Mobile Drawer Filters */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end bg-ink/60 backdrop-blur-xs lg:hidden">
-          <div className="h-full w-full max-w-xs overflow-y-auto bg-paper p-6 shadow-2xl flex flex-col justify-between">
+          <div className="h-full w-full max-w-xs overflow-y-auto bg-paper p-6 shadow-2xl flex flex-col justify-between animate-slideLeft">
             <div>
               <div className="mb-6 flex items-center justify-between pb-4 border-b border-stone/50">
                 <span className="font-editorial text-xl font-bold text-ink">Refine Selection</span>
@@ -122,11 +149,8 @@ export function ProductListing({
               </div>
 
               <ProductFilters
-                query={extraQuery}
-                onChange={(q) => {
-                  setExtraQuery(q);
-                  setPage(1);
-                }}
+                query={query}
+                onChange={handleFilterChange}
               />
             </div>
 
@@ -134,7 +158,7 @@ export function ProductListing({
               <Button
                 variant="primary"
                 size="md"
-                className="w-full justify-center rounded-full shadow-crimson"
+                className="w-full justify-center rounded-full shadow-crimson font-bold"
                 onClick={() => setMobileFiltersOpen(false)}
               >
                 Apply Filters
@@ -143,6 +167,7 @@ export function ProductListing({
           </div>
         </div>
       )}
+
 
     </div>
   );

@@ -321,6 +321,17 @@ export const productService = {
         .map(mapProduct)
         .filter((p) => !deletedIds.includes(p.id));
 
+      // If backend returns empty list when query parameters are supplied, fetch full database list as fallback!
+      if (products.length === 0 && (query.category || query.gender || query.search)) {
+        try {
+          const fallbackRes = await apiFetch<ProductListResponse>("/products?limit=100", { auth: false });
+          const allItems = (fallbackRes.products || []).map(mapProduct).filter((p) => !deletedIds.includes(p.id));
+          if (allItems.length > 0) {
+            products = allItems;
+          }
+        } catch {}
+      }
+
       // Robust fallback search & filter if search query is provided
       if (query.search) {
         const searchTerm = query.search.toLowerCase().trim();
@@ -334,18 +345,36 @@ export const productService = {
       }
 
       if (query.gender) {
-        const g = query.gender.toLowerCase();
-        products = products.filter((p) => p.gender.toLowerCase() === g || p.gender.toLowerCase() === "unisex");
+        const g = query.gender.toLowerCase().trim();
+        products = products.filter((p) => {
+          const pGender = p.gender.toLowerCase().trim();
+          return pGender === g || pGender === "unisex" || (g === "men" && pGender.includes("men")) || (g === "women" && pGender.includes("women"));
+        });
       }
 
       if (query.category) {
-        const c = query.category.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const rawCat = query.category.toLowerCase().trim();
+        const c = rawCat.replace(/[^a-z0-9]/g, "");
         products = products.filter((p) => {
-          const pCat = p.category.toLowerCase().replace(/[^a-z0-9]/g, "");
-          const pSub = (p.subcategory || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-          return pCat.includes(c) || c.includes(pCat) || pSub.includes(c);
+          const pCat = p.category.toLowerCase().trim();
+          const pCatClean = pCat.replace(/[^a-z0-9]/g, "");
+          const pSub = (p.subcategory || "").toLowerCase().trim();
+          const pSubClean = pSub.replace(/[^a-z0-9]/g, "");
+          const pTitle = p.title.toLowerCase().trim();
+
+          // Specific T-Shirt vs Shirt distinction
+          if (c === "shirts" || c === "shirt") {
+            const isTshirt = pCatClean.includes("tshirt") || pTitle.includes("t-shirt") || pTitle.includes("tshirt") || pTitle.includes("tee");
+            return (pCatClean.includes("shirt") || pTitle.includes("shirt")) && !isTshirt;
+          }
+          if (c === "tshirts" || c === "tshirt") {
+            return pCatClean.includes("tshirt") || pTitle.includes("t-shirt") || pTitle.includes("tshirt") || pTitle.includes("tee");
+          }
+
+          return pCatClean.includes(c) || c.includes(pCatClean) || pSubClean.includes(c) || pTitle.includes(rawCat);
         });
       }
+
 
 
       const pagination = response.pagination || {};
