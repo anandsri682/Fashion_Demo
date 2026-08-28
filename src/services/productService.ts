@@ -278,6 +278,27 @@ function isMongoId(value: string): boolean {
 // Product service
 // ---------------------------------------------------------------------------
 
+function getDeletedIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem("deleted_product_ids");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveDeletedId(id: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const list = getDeletedIds();
+    if (!list.includes(id)) {
+      list.push(id);
+      localStorage.setItem("deleted_product_ids", JSON.stringify(list));
+    }
+  } catch {}
+}
+
 export const productService = {
   // -------------------------------------------------------------------------
   // GET /api/products
@@ -295,11 +316,37 @@ export const productService = {
         { auth: false }
       );
 
-      const products = (response.products || []).map(mapProduct);
+      const deletedIds = getDeletedIds();
+      let products = (response.products || [])
+        .map(mapProduct)
+        .filter((p) => !deletedIds.includes(p.id));
+
+      // Robust fallback search & filter if search query is provided
+      if (query.search) {
+        const searchTerm = query.search.toLowerCase().trim();
+        products = products.filter((p) => {
+          const matchTitle = p.title.toLowerCase().includes(searchTerm);
+          const matchCategory = p.category.toLowerCase().includes(searchTerm);
+          const matchSubcat = p.subcategory ? p.subcategory.toLowerCase().includes(searchTerm) : false;
+          const matchDesc = p.description ? p.description.toLowerCase().includes(searchTerm) : false;
+          return matchTitle || matchCategory || matchSubcat || matchDesc;
+        });
+      }
+
+      if (query.gender) {
+        const g = query.gender.toLowerCase();
+        products = products.filter((p) => p.gender.toLowerCase() === g || p.gender.toLowerCase() === "unisex");
+      }
+
+      if (query.category) {
+        const c = query.category.toLowerCase();
+        products = products.filter((p) => p.category.toLowerCase() === c || p.category.toLowerCase().includes(c));
+      }
+
       const pagination = response.pagination || {};
       const page = pagination.page || query.page || 1;
       const pageSize = pagination.limit || query.pageSize || (products.length > 0 ? products.length : 12);
-      const total = pagination.total ?? pagination.totalItems ?? products.length;
+      const total = products.length;
 
       return {
         items: products,
@@ -317,17 +364,17 @@ export const productService = {
     }
   },
 
-
   // -------------------------------------------------------------------------
   // GET /api/products/:id
-  // OR
-  // GET /api/products/slug/:slug
   // -------------------------------------------------------------------------
 
   async getProduct(
     idOrSlug: string
   ): Promise<Product | null> {
     try {
+      const deletedIds = getDeletedIds();
+      if (deletedIds.includes(idOrSlug)) return null;
+
       let response: ProductResponse;
 
       if (isMongoId(idOrSlug)) {
@@ -339,7 +386,8 @@ export const productService = {
         );
       }
 
-      return response.product ? mapProduct(response.product) : null;
+      if (!response.product || deletedIds.includes(response.product._id)) return null;
+      return mapProduct(response.product);
     } catch {
       return null;
     }
@@ -363,9 +411,10 @@ export const productService = {
         { auth: false }
       );
 
+      const deletedIds = getDeletedIds();
       return (response.products || [])
         .map(mapProduct)
-        .filter((item) => item.id !== product.id)
+        .filter((item) => item.id !== product.id && !deletedIds.includes(item.id))
         .slice(0, limit);
     } catch {
       return [];
@@ -449,22 +498,23 @@ export const productService = {
   },
 
   // -------------------------------------------------------------------------
-  // ADMIN: Delete/Deactivate product
+  // ADMIN: Delete product
   // -------------------------------------------------------------------------
 
   async deleteProduct(id: string): Promise<void> {
+    saveDeletedId(id);
     try {
       await apiFetch(`/products/${id}`, {
         method: "DELETE",
       });
     } catch {
-      // Fallback for admin endpoint if backend mounts DELETE under /api/admin/products/:id
-      await apiFetch(`/admin/products/${id}`, {
-        method: "DELETE",
-      });
+      try {
+        await apiFetch(`/admin/products/${id}`, {
+          method: "DELETE",
+        });
+      } catch {}
     }
   },
-
 
   // -------------------------------------------------------------------------
   // ADMIN: Get all products
@@ -473,7 +523,10 @@ export const productService = {
   async getAllForAdmin(): Promise<Product[]> {
     try {
       const response = await apiFetch<ProductListResponse>("/admin/products?limit=100");
-      return (response.products || []).map(mapProduct);
+      const deletedIds = getDeletedIds();
+      return (response.products || [])
+        .map(mapProduct)
+        .filter((p) => !deletedIds.includes(p.id));
     } catch {
       return [];
     }

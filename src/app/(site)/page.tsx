@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 
 export default async function HomePage() {
-  // Fetch ALL products from MongoDB Atlas
+  // Fetch products from MongoDB Atlas
   const allResult = await productService.getProducts({ pageSize: 50 });
   const allProducts = allResult.items || [];
 
@@ -19,14 +19,6 @@ export default async function HomePage() {
       {/* Category Scroller Bar */}
       <CategoryScroller />
 
-      {/* Primary Rail: All Products from Database */}
-      <ProductRail
-        title="All Products"
-        eyebrow="Explore Catalogue"
-        products={allProducts}
-        viewAllHref="/products"
-      />
-
       {/* Dynamic Category Rails from MongoDB Atlas */}
       {categories.map((cat) => {
         const catProducts = allProducts.filter((p) => p.category === cat);
@@ -34,17 +26,15 @@ export default async function HomePage() {
           <ProductRail
             key={cat}
             title={cat}
-            eyebrow="Category Edit"
+            eyebrow="Collection"
             products={catProducts}
             viewAllHref={`/products?category=${encodeURIComponent(cat)}`}
           />
         );
       })}
-
-      {/* Secondary Promo Cards */}
-      <PromoBanner />
     </div>
   );
 }
+
 
 

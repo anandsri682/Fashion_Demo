@@ -41,34 +41,8 @@ export function Footer() {
 
   return (
     <footer className="border-t border-stone/80 bg-ink text-white">
-      {/* Trust Highlights */}
-      <div className="border-b border-white/10 bg-white/5 py-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 sm:grid-cols-3 lg:px-8 text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-4">
-            <Truck className="h-6 w-6 text-primary shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-white">Complimentary Express Shipping</p>
-              <p className="text-[11px] text-ash">On all orders over ₹999 nationwide</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-center sm:justify-start gap-4">
-            <RefreshCw className="h-6 w-6 text-primary shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-white">Considered 30-Day Returns</p>
-              <p className="text-[11px] text-ash">30-day effortless return policy</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-center sm:justify-start gap-4">
-            <ShieldCheck className="h-6 w-6 text-primary shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-white">Authentic Craftsmanship</p>
-              <p className="text-[11px] text-ash">100% genuine luxury fabrics</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer Links */}
+
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 py-16 lg:grid-cols-12 lg:px-8">
         {/* Brand & Newsletter Column */}
         <div className="lg:col-span-5 flex flex-col justify-between">

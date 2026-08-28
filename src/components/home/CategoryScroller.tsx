@@ -8,32 +8,19 @@ import { getImageUrl } from "@/lib/api";
 
 import { Sparkles, Tag, ShoppingBag } from "lucide-react";
 
-const fallbackCategories = [
-  { name: "Men", slug: "men", gender: "Men", iconUrl: "/uploads/seed/oxford-shirt.jpg" },
-  { name: "Women", slug: "women", gender: "Women", iconUrl: "/uploads/seed/wrap-dress.jpg" },
-  { name: "Kids", slug: "kids", gender: "Kids", iconUrl: "/uploads/seed/canvas-sneakers.jpg" },
-  { name: "Shirts", slug: "shirts", iconUrl: "/uploads/seed/oxford-shirt.jpg" },
-  { name: "T-Shirts", slug: "t-shirts", iconUrl: "/uploads/seed/denim-jeans.jpg" },
-  { name: "Pants", slug: "pants", iconUrl: "/uploads/seed/denim-jeans.jpg" },
-  { name: "Jeans", slug: "jeans", iconUrl: "/uploads/seed/denim-jeans.jpg" },
-  { name: "Dresses", slug: "dresses", iconUrl: "/uploads/seed/wrap-dress.jpg" },
-];
-
 export function CategoryScroller() {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     async function load() {
       try {
         const data = await categoryService.getPublicCategories();
-        if (data && data.categories && data.categories.length > 0) {
+        if (data && data.categories) {
           setCategories(data.categories);
         }
       } catch {
-
-        // Fallback gracefully if API is offline
+        // Handle gracefully
       } finally {
         setLoading(false);
       }
@@ -41,44 +28,40 @@ export function CategoryScroller() {
     load();
   }, []);
 
-  const itemsToDisplay = categories.length > 0
-    ? categories.map((cat) => ({
-        name: cat.name,
-        href: `/products?category=${cat.slug}`,
-        image: cat.image ? getImageUrl(cat.image) : "/uploads/seed/oxford-shirt.jpg",
-      }))
-    : fallbackCategories.map((cat) => ({
-        name: cat.name,
-        href: cat.gender ? `/products?gender=${cat.gender}` : `/products?category=${cat.slug}`,
-        image: cat.iconUrl,
-      }));
+  if (loading || categories.length === 0) {
+    return null;
+  }
 
   return (
     <div className="w-full bg-white py-3 border-b border-slate-100 overflow-x-auto no-scrollbar">
       <div className="flex items-center gap-4 px-4 min-w-max">
-        {itemsToDisplay.map((item, idx) => (
-          <Link
-            key={item.name + idx}
-            href={item.href}
-            className="flex flex-col items-center gap-1.5 group cursor-pointer"
-          >
-            <div className="relative h-14 w-14 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-rose-500 transition-all p-0.5 shadow-xs bg-slate-50">
-              <div className="relative h-full w-full rounded-full overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  sizes="56px"
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
-                />
+        {categories.map((cat, idx) => {
+          const imgUrl = cat.image ? getImageUrl(cat.image) : "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&auto=format&fit=crop&q=80";
+          return (
+            <Link
+              key={cat.id || cat._id || (cat.name + idx)}
+              href={`/products?category=${encodeURIComponent(cat.slug || cat.name)}`}
+              className="flex flex-col items-center gap-1.5 group cursor-pointer"
+            >
+              <div className="relative h-14 w-14 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-rose-500 transition-all p-0.5 shadow-xs bg-slate-50">
+                <div className="relative h-full w-full rounded-full overflow-hidden">
+                  <Image
+                    src={imgUrl}
+                    alt={cat.name}
+                    fill
+                    sizes="56px"
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
               </div>
-            </div>
-            <span className="text-[10px] font-semibold text-slate-700 group-hover:text-rose-600 tracking-tight text-center max-w-[64px] truncate">
-              {item.name}
-            </span>
-          </Link>
-        ))}
+              <span className="text-[10px] font-semibold text-slate-700 group-hover:text-rose-600 tracking-tight text-center max-w-[64px] truncate">
+                {cat.name}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
 }
+

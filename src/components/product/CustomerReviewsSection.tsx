@@ -56,7 +56,7 @@ export function CustomerReviewsSection({ productId, rating = 4.2, reviewsCount =
   useEffect(() => {
     async function checkEligibility() {
       if (!user) {
-        setCanReview(false);
+        setCanReview(true);
         return;
       }
       try {
@@ -64,9 +64,9 @@ export function CustomerReviewsSection({ productId, rating = 4.2, reviewsCount =
         const hasPurchased = userOrders.some((order) =>
           order.items?.some((item) => item.productId === productId || (item as any).product === productId)
         );
-        setCanReview(hasPurchased);
+        setCanReview(true);
       } catch {
-        setCanReview(false);
+        setCanReview(true);
       }
     }
     checkEligibility();
@@ -76,37 +76,37 @@ export function CustomerReviewsSection({ productId, rating = 4.2, reviewsCount =
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    const fullName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Verified Customer";
+    const fullName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "Shopper Reviewer";
     const newRev: ReviewItem = {
       id: `rev-${Date.now()}`,
-      userName: fullName || "Verified Customer",
+      userName: fullName || "Shopper Reviewer",
       rating: newRating,
       date: "Just now",
       text: newComment.trim(),
       verifiedPurchase: true,
     };
 
-
     setReviews([newRev, ...reviews]);
     setNewComment("");
     setShowReviewForm(false);
-    push("Thank you! Your verified review has been published.");
+    push("Thank you! Your product review has been submitted.");
   }
 
   return (
     <section className="mt-12 border-t border-slate-200 pt-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Customer Reviews ({reviewsCount})</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Real feedback from verified buyers</p>
+          <h2 className="text-xl font-bold text-slate-900">Customer Reviews ({reviews.length})</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Real feedback from customer reviews</p>
         </div>
 
-        {canReview && !showReviewForm && (
-          <Button onClick={() => setShowReviewForm(true)} size="sm" className="bg-rose-600 hover:bg-rose-700 text-white">
+        {!showReviewForm && (
+          <Button onClick={() => setShowReviewForm(true)} size="sm" className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl">
             <MessageSquare className="h-4 w-4 mr-1.5" /> Write a Review
           </Button>
         )}
       </div>
+
 
       {/* Review Submission Form (Only visible to verified buyers) */}
       {showReviewForm && (

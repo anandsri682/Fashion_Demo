@@ -226,22 +226,37 @@ export function ProductDetails({ product, related }: { product: Product; related
               <Button
                 variant="outline"
                 size="lg"
-                className="flex-1 justify-center gap-2 border-rose-600 text-rose-600 hover:bg-rose-50 rounded-xl font-bold"
+                className={cn(
+                  "flex-1 justify-center gap-2 rounded-xl font-bold transition-all",
+                  !size
+                    ? "border-amber-300 bg-amber-50/60 text-amber-800 hover:bg-amber-100"
+                    : "border-rose-600 text-rose-600 hover:bg-rose-50"
+                )}
                 disabled={isOutOfStock}
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="h-4 w-4" />
-                <span>{isOutOfStock ? "Out of Stock" : "Add to Bag"}</span>
+                <span>
+                  {isOutOfStock
+                    ? "Out of Stock"
+                    : !size
+                    ? "Select Size to Add"
+                    : "Add to Bag"}
+                </span>
               </Button>
               <Button
                 variant="primary"
                 size="lg"
-                className="flex-1 justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md"
+                className={cn(
+                  "flex-1 justify-center rounded-xl font-bold shadow-md transition-all",
+                  !size
+                    ? "bg-slate-300 text-slate-600 cursor-not-allowed hover:bg-slate-300"
+                    : "bg-rose-600 hover:bg-rose-700 text-white"
+                )}
                 disabled={isOutOfStock}
                 onClick={handleBuyNow}
               >
-
-                <span>Buy Now</span>
+                <span>{!size ? "Select Size to Buy" : "Buy Now"}</span>
               </Button>
               <button
                 onClick={() => toggle(product.id)}
@@ -252,8 +267,6 @@ export function ProductDetails({ product, related }: { product: Product; related
               </button>
             </div>
           </div>
-
-
 
           {/* Guarantees */}
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-stone/60 pt-6 text-xs text-graphite">
@@ -277,7 +290,7 @@ export function ProductDetails({ product, related }: { product: Product; related
                   tab === "details" ? "text-brass font-bold" : "text-ash hover:text-ink"
                 )}
               >
-                Details & Care
+                Details &amp; Care
                 {tab === "details" && <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brass" />}
               </button>
               <button
@@ -287,7 +300,7 @@ export function ProductDetails({ product, related }: { product: Product; related
                   tab === "shipping" ? "text-brass font-bold" : "text-ash hover:text-ink"
                 )}
               >
-                Shipping & Atelier Guarantee
+                Shipping &amp; Guarantee
                 {tab === "shipping" && <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brass" />}
               </button>
             </div>
@@ -329,25 +342,36 @@ export function ProductDetails({ product, related }: { product: Product; related
         </section>
       )}
 
-      {/* Sticky Mobile Bottom Action Bar (Fixed to bottom above mobile nav) */}
-      <div className="fixed bottom-14 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 shadow-lg flex items-center gap-3 sm:hidden">
+      {/* Animated Sticky Mobile Bottom Action Bar */}
+      <div className="fixed bottom-14 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 shadow-2xl flex items-center gap-3 sm:hidden rounded-t-2xl transition-all duration-300 animate-fadeIn">
         <button
           onClick={handleAddToCart}
           disabled={isOutOfStock}
-          className="flex-1 py-3 px-3 rounded-xl border-2 border-slate-900 text-slate-900 font-bold text-xs uppercase tracking-wider text-center active:scale-98 transition-transform disabled:opacity-50"
+          className={cn(
+            "flex-1 py-3 px-3 rounded-xl border-2 font-bold text-xs uppercase tracking-wider text-center active:scale-95 transition-transform duration-200",
+            !size
+              ? "border-amber-400 bg-amber-50 text-amber-800"
+              : "border-slate-900 text-slate-900 bg-white"
+          )}
         >
-          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          {isOutOfStock ? "Out of Stock" : !size ? "Select Size" : "Add to Cart"}
         </button>
         <button
           onClick={handleBuyNow}
           disabled={isOutOfStock}
-          className="flex-1 py-3 px-3 rounded-xl bg-rose-600 text-white font-bold text-xs uppercase tracking-wider text-center active:scale-98 transition-transform shadow-md disabled:opacity-50"
+          className={cn(
+            "flex-1 py-3 px-3 rounded-xl font-bold text-xs uppercase tracking-wider text-center active:scale-95 transition-transform duration-200 shadow-md",
+            !size
+              ? "bg-slate-300 text-slate-600 cursor-not-allowed"
+              : "bg-rose-600 text-white hover:bg-rose-700"
+          )}
         >
-          Buy Now
+          {!size ? "Select Size" : "Buy Now"}
         </button>
       </div>
     </div>
   );
 }
+
 
 

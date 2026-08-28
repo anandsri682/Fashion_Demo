@@ -27,9 +27,9 @@ export function ProductListing({
 
   const query: ProductQuery = useMemo(
     () => ({
-      gender,
-      collection,
-      category: fixedCategory,
+      gender: gender || (searchParams.get("gender") as ProductQuery["gender"]) || undefined,
+      collection: collection || searchParams.get("collection") || undefined,
+      category: fixedCategory || (searchParams.get("category") as ProductQuery["category"]) || undefined,
       sort: (searchParams.get("sort") as ProductQuery["sort"]) || undefined,
       page,
       pageSize: 12,
@@ -37,6 +37,7 @@ export function ProductListing({
     }),
     [gender, collection, fixedCategory, searchParams, page, extraQuery]
   );
+
 
   const { data, status } = useProducts(query);
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;

@@ -12,6 +12,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
+import { getImageUrl } from "@/lib/api";
+
 export default function OrderSuccessPage() {
   const params = useParams<{ orderId: string }>();
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
@@ -63,8 +65,8 @@ export default function OrderSuccessPage() {
         <div className="mt-6 divide-y divide-stone border border-stone text-left">
           {order.items.map((item, i) => (
             <div key={i} className="flex items-center gap-4 p-4">
-              <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-stone">
-                <Image src={item.image} alt={item.title} fill className="object-cover" sizes="56px" />
+              <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-stone rounded-lg">
+                <Image src={getImageUrl(item.image)} alt={item.title} fill className="object-cover" sizes="56px" />
               </div>
               <div className="flex flex-1 justify-between">
                 <div>
@@ -77,6 +79,7 @@ export default function OrderSuccessPage() {
               </div>
             </div>
           ))}
+
           <div className="flex justify-between p-4">
             <span className="text-sm font-medium text-ink">Total Amount</span>
             <span className="text-sm font-medium text-ink">{formatCurrency(order.total)}</span>
