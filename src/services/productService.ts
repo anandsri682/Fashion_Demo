@@ -339,9 +339,14 @@ export const productService = {
       }
 
       if (query.category) {
-        const c = query.category.toLowerCase();
-        products = products.filter((p) => p.category.toLowerCase() === c || p.category.toLowerCase().includes(c));
+        const c = query.category.toLowerCase().replace(/[^a-z0-9]/g, "");
+        products = products.filter((p) => {
+          const pCat = p.category.toLowerCase().replace(/[^a-z0-9]/g, "");
+          const pSub = (p.subcategory || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          return pCat.includes(c) || c.includes(pCat) || pSub.includes(c);
+        });
       }
+
 
       const pagination = response.pagination || {};
       const page = pagination.page || query.page || 1;

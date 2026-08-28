@@ -38,22 +38,23 @@ export default function AdminDashboardPage() {
   if (!statsData) return <DashboardSkeleton />;
 
   const {
-    totalRevenue,
-    totalOrders,
-    totalProducts,
-    totalUsers,
-    pendingOrders,
-    processingOrders,
-    shippedOrders,
-    deliveredOrders,
-    cancelledOrders,
-  } = statsData;
+    totalRevenue = 0,
+    totalOrders = 0,
+    totalProducts = 0,
+    totalUsers = 0,
+    pendingOrders = 0,
+    processingOrders = 0,
+    shippedOrders = 0,
+    deliveredOrders = 0,
+    cancelledOrders = 0,
+  } = statsData || {};
 
-  const lowStockList = statsData.lowStockProductsList || [];
-  const outOfStockList = statsData.outOfStockProductsList || [];
-  const bestSellers = statsData.bestSellingProductsList || [];
-  const recentCustomers = statsData.recentUsers || [];
-  const recentOrders = statsData.recentOrders || [];
+  const lowStockList = (statsData?.lowStockProductsList || []).filter(Boolean);
+  const outOfStockList = (statsData?.outOfStockProductsList || []).filter(Boolean);
+  const bestSellers = (statsData?.bestSellingProductsList || []).filter((b: any) => b && b.product);
+  const recentCustomers = (statsData?.recentUsers || []).filter(Boolean);
+  const recentOrders = (statsData?.recentOrders || []).filter(Boolean);
+
 
   async function handleUpdateStock(productId: string) {
     try {
@@ -202,23 +203,32 @@ export default function AdminDashboardPage() {
             <div className="py-12 text-center text-xs text-ash font-mono">No sales data recorded yet for this period.</div>
           ) : (
             <div className="divide-y divide-stone/50">
-              {bestSellers.map((item: any) => (
-                <div key={item.product.id} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-12 w-10 overflow-hidden rounded bg-stone shrink-0">
-                      <Image src={getImageUrl(item.product.images?.[0]?.url || "")} alt={item.product.title} fill className="object-cover" />
+              {bestSellers.map((item: any) => {
+                const prod = item?.product || {};
+                const prodId = prod.id || prod._id || Math.random().toString();
+                const prodTitle = prod.title || "Product";
+                const prodPrice = prod.price || 0;
+                const prodStock = prod.stock ?? prod.quantity ?? 0;
+                const imgUrl = getImageUrl(prod.images?.[0]?.url || "");
+                return (
+                  <div key={prodId} className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-12 w-10 overflow-hidden rounded bg-stone shrink-0">
+                        <Image src={imgUrl} alt={prodTitle} fill className="object-cover" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-ink">{prodTitle}</p>
+                        <p className="text-[10px] text-ash font-mono">{formatCurrency(prodPrice)} &middot; Stock: {prodStock}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-ink">{item.product.title}</p>
-                      <p className="text-[10px] text-ash font-mono">{formatCurrency(item.product.price)} &middot; Stock: {item.product.stock}</p>
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-primary">{item.unitsSold || 0} units sold</p>
+                      <p className="text-[10px] text-ash font-mono">{formatCurrency(item.totalRevenue || 0)} revenue</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs font-bold text-primary">{item.unitsSold} units sold</p>
-                    <p className="text-[10px] text-ash font-mono">{formatCurrency(item.totalRevenue)} revenue</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
+
             </div>
           )}
         </div>

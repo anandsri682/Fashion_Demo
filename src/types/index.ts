@@ -117,6 +117,7 @@ export interface CartTotals {
 
 export interface Address {
   id: string;
+  type?: string;
   firstName: string;
   lastName: string;
   phone: string;
@@ -130,6 +131,7 @@ export interface Address {
   landmark?: string;
   isDefault?: boolean;
 }
+
 
 export type PaymentMethod = "UPI" | "CREDIT_CARD" | "DEBIT_CARD" | "COD";
 

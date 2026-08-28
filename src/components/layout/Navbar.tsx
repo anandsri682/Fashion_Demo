@@ -16,12 +16,12 @@ import { settingsService } from "@/services/settingsService";
 
 const primaryLinks = [
   { label: "Home", href: "/" },
-  { label: "Women", href: "/products?gender=Women" },
-  { label: "Men", href: "/products?gender=Men" },
-  { label: "New Arrivals", href: "/products?collection=new-arrivals" },
-  { label: "Collections", href: "/products" },
+  { label: "Women", href: "/women" },
+  { label: "Men", href: "/men" },
+  { label: "New Arrivals", href: "/new-arrivals" },
   { label: "Sale", href: "/products?sort=price-asc", isSale: true },
 ];
+
 
 import { useSettingsStore } from "@/store/settingsStore";
 
