@@ -46,20 +46,30 @@ export function ProductCard({ product }: { product: Product }) {
     push(`Added ${product.title} to your bag`);
   }
 
+  const [imgError, setImgError] = useState(false);
+
   return (
     <>
       <div className="group relative flex flex-col transition-all duration-300">
         {/* Product Image Area */}
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-100 rounded-2xl border border-slate-100 shadow-xs group-hover:shadow-md transition-all duration-300">
-          <Link href={`/products/${product.id}`} className="block h-full w-full">
-            <Image
-              src={primaryImage}
-              alt={product.images[0]?.alt || product.title}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            {secondaryImage && (
+          <Link href={`/products/${product.id}`} className="block h-full w-full relative">
+            {imgError ? (
+              <div className="flex h-full w-full flex-col items-center justify-center bg-slate-100 p-4 text-center">
+                <span className="text-xs font-mono font-bold text-slate-500 animate-pulse">Image Loading...</span>
+                <span className="text-[10px] font-mono text-slate-400 mt-1">{product.title}</span>
+              </div>
+            ) : (
+              <Image
+                src={primaryImage}
+                alt={product.images[0]?.alt || product.title}
+                fill
+                onError={() => setImgError(true)}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            )}
+            {!imgError && secondaryImage && (
               <Image
                 src={secondaryImage}
                 alt={product.title}
@@ -69,6 +79,7 @@ export function ProductCard({ product }: { product: Product }) {
               />
             )}
           </Link>
+
 
           {/* Badges Top-Left */}
           <div className="absolute left-2 top-2 z-10 flex flex-col gap-1 pointer-events-none">

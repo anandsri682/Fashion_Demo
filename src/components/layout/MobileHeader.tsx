@@ -44,23 +44,27 @@ export function MobileHeader() {
 
   return (
     <>
-      <div className="bg-white border-b border-slate-100 px-4 pt-3 pb-3.5 lg:hidden sticky top-0 z-30 shadow-xs">
-        {/* Top Location & Wishlist Row */}
-        <div className="flex items-center justify-between mb-3">
-          <div onClick={() => setAddressModalOpen(true)} className="flex items-center gap-1.5 cursor-pointer group">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-rose-50 text-rose-600 group-hover:bg-rose-100 transition-colors">
-              <MapPin className="h-3.5 w-3.5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-700">
-                <span>Deliver to</span>
-                <span className="font-bold text-slate-900 truncate max-w-[140px]">{selectedAddress}</span>
-                <ChevronDown className="h-3 w-3 text-slate-400" />
-              </div>
-            </div>
-          </div>
+      <div className="bg-white border-b border-slate-100 px-4 pt-3 pb-3 lg:hidden sticky top-0 z-30 shadow-xs">
+        {/* Top Row: Brand Name + Icons */}
+        <div className="flex items-center justify-between mb-2">
+          <Link href="/" className="flex flex-col">
+            <span className="font-editorial text-lg font-extrabold uppercase tracking-widest text-slate-900 leading-tight">
+              {settings.storeName || "MAISON NOIR"}
+            </span>
+            <span className="text-[8px] uppercase tracking-[0.25em] font-sans font-bold text-rose-600 -mt-0.5">
+              HAUTE COUTURE
+            </span>
+          </Link>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+
             <Link
               href="/wishlist"
               aria-label="Wishlist"
@@ -76,18 +80,29 @@ export function MobileHeader() {
           </div>
         </div>
 
-        {/* Search Bar Input Row */}
-        <button
-          onClick={() => setSearchOpen(true)}
-          className="w-full flex items-center justify-between gap-2 rounded-xl bg-slate-100/90 border border-slate-200/60 px-3.5 py-2.5 text-xs text-slate-400 hover:border-rose-400 transition-all shadow-xs"
-        >
-          <div className="flex items-center gap-2.5">
-            <Search className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-500 font-normal">Search for products, brands and more...</span>
+        {/* Location Row & Search Input Bar */}
+        <div className="flex items-center justify-between gap-2">
+          <div onClick={() => setAddressModalOpen(true)} className="flex items-center gap-1.5 cursor-pointer group py-1">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-50 text-rose-600 group-hover:bg-rose-100 transition-colors">
+              <MapPin className="h-3 w-3" />
+            </div>
+            <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-700">
+              <span>Deliver to</span>
+              <span className="font-bold text-slate-900 truncate max-w-[130px]">{selectedAddress}</span>
+              <ChevronDown className="h-3 w-3 text-slate-400" />
+            </div>
           </div>
-          <Camera className="h-4 w-4 text-slate-400" />
-        </button>
+
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex-1 max-w-[160px] flex items-center justify-between gap-1.5 rounded-lg bg-slate-100/90 border border-slate-200/60 px-2.5 py-1.5 text-[10px] text-slate-400 hover:border-rose-400 transition-all shadow-xs"
+          >
+            <span className="text-slate-500 font-normal truncate">Search items...</span>
+            <Search className="h-3 w-3 text-slate-400 shrink-0" />
+          </button>
+        </div>
       </div>
+
 
       {/* Address & Pincode Selection Modal */}
       {addressModalOpen && (

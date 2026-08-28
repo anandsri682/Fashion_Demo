@@ -35,6 +35,7 @@ export function ProductListing({
 
   const query: ProductQuery = useMemo(
     () => ({
+      search: searchParams.get("search") || searchParams.get("q") || undefined,
       gender: gender || (searchParams.get("gender") as ProductQuery["gender"]) || undefined,
       collection: collection || searchParams.get("collection") || undefined,
       category: activeCategory,
@@ -45,6 +46,7 @@ export function ProductListing({
     }),
     [gender, collection, fixedCategory, activeCategory, searchParams, page, extraQuery]
   );
+
 
   const handleFilterChange = (newQuery: ProductQuery) => {
     setExtraQuery(newQuery);
