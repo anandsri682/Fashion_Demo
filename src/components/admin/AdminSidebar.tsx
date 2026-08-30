@@ -16,7 +16,9 @@ import {
   Settings,
   UserCheck,
   ArrowLeft,
+  ShoppingBag,
 } from "lucide-react";
+
 
 const links = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -73,12 +75,17 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-      <div className="mt-6 px-3 border-t border-stone/50 pt-4">
-        <Link href="/" className="flex items-center gap-2.5 px-3.5 py-2 text-xs font-bold text-ash hover:text-primary transition-colors">
-          <ArrowLeft className="h-4 w-4" /> <span>Back to Main Store</span>
+      <div className="mt-6 px-3 border-t border-stone/50 pt-4 space-y-2 pb-6">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-stone bg-paper text-xs font-bold text-ink hover:border-primary hover:text-primary transition-all shadow-2xs"
+        >
+          <ShoppingBag className="h-4 w-4 text-primary shrink-0" />
+          <span>View Customer Store</span>
         </Link>
       </div>
     </aside>
   );
 }
+
 

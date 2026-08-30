@@ -1,13 +1,13 @@
-import { MapPin, ChevronDown, Heart, Search, Camera, X, CheckCircle, Navigation } from "lucide-react";
+import { MapPin, ChevronDown, Heart, Search, Camera, X, CheckCircle, Navigation, ShieldCheck, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SearchOverlay } from "./SearchOverlay";
 import { useSettingsStore } from "@/store/settingsStore";
 import { useWishlistStore } from "@/store/wishlistStore";
+import { useAuthStore } from "@/store/authStore";
 import { addressService } from "@/services/addressService";
 import { Address } from "@/types";
 import { useToastStore } from "@/store/toastStore";
-
 
 export function MobileHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -18,6 +18,7 @@ export function MobileHeader() {
   const [selectedAddress, setSelectedAddress] = useState<string>("Home - 400001");
 
   const wishlistCount = useWishlistStore((s) => s.productIds.length);
+  const user = useAuthStore((s) => s.user);
   const push = useToastStore((s) => s.push);
   const settings = useSettingsStore((s) => s.settings);
 
@@ -44,7 +45,25 @@ export function MobileHeader() {
 
   return (
     <>
+      {/* Admin Return Banner for Mobile */}
+      {user?.role === "ADMIN" && (
+        <div className="bg-slate-900 text-white px-3 py-1.5 text-[11px] font-mono font-bold flex items-center justify-between z-40 border-b border-slate-800 lg:hidden">
+          <div className="flex items-center gap-1.5 text-rose-400 truncate max-w-[200px]">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">Admin Mode</span>
+          </div>
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1 bg-rose-600 px-2.5 py-0.5 rounded text-[10px] font-bold text-white hover:bg-rose-700 transition-colors shrink-0"
+          >
+            <span>Admin Studio</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      )}
+
       <div className="bg-white border-b border-slate-100 px-4 pt-3 pb-3 lg:hidden sticky top-0 z-30 shadow-xs">
+
         {/* Top Row: Brand Name + Icons */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col">

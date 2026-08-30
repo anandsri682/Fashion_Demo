@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LayoutDashboard, Package, ShoppingCart, Warehouse, MoreHorizontal, Users, Tag, Bell, Settings, X, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Warehouse, MoreHorizontal, Users, Tag, Bell, Settings, X, ChevronRight, ShoppingBag, LogOut } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useAuth } from "@/hooks/useAuth";
 
 export function MobileAdminNav() {
   const pathname = usePathname();
+  const { logout } = useAuth();
   const [moreOpen, setMoreOpen] = useState(false);
+
 
   const mainItems = [
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -75,6 +78,18 @@ export function MobileAdminNav() {
             </div>
 
             <div className="space-y-2">
+              <Link
+                href="/"
+                onClick={() => setMoreOpen(false)}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-rose-600/20 border border-rose-500/40 text-white text-sm font-bold transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <ShoppingBag className="h-5 w-5 text-rose-500" />
+                  <span>View Customer Store</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </Link>
+
               {moreItems.map((item) => (
                 <Link
                   key={item.label}
@@ -89,6 +104,20 @@ export function MobileAdminNav() {
                   <ChevronRight className="h-4 w-4 text-slate-500" />
                 </Link>
               ))}
+
+              <button
+                onClick={() => {
+                  setMoreOpen(false);
+                  logout();
+                }}
+                className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-rose-950/60 border border-rose-900 text-rose-400 text-sm font-bold hover:bg-rose-900 transition-colors mt-4"
+              >
+                <div className="flex items-center gap-3">
+                  <LogOut className="h-5 w-5 text-rose-500" />
+                  <span>Logout from Admin</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-rose-500" />
+              </button>
             </div>
           </div>
         </div>
@@ -96,3 +125,4 @@ export function MobileAdminNav() {
     </>
   );
 }
+
