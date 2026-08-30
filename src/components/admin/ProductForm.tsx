@@ -10,6 +10,8 @@ import { categoryService, CategoryItem, SubcategoryItem } from "@/services/categ
 import { X, Upload, Layers, Boxes, Tag } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
+import { getSizeTypeForCategory, getSizesForCategory } from "@/lib/sizes";
+
 
 export interface ProductFormImage {
   id: string;
@@ -90,16 +92,22 @@ export function ProductForm({
     }).catch(() => {});
   }, [initial?.category]);
 
-  // Adjust active size preset based on gender or subcategory
+  // Automatically select size preset based on selected category / subcategory
+
   useEffect(() => {
-    if (values.gender === "Kids") {
-      setActiveSizePreset("kids");
-    } else if (values.category.toLowerCase().includes("shoe") || values.subcategory.toLowerCase().includes("shoe") || values.subcategory.toLowerCase().includes("sneaker")) {
-      setActiveSizePreset("shoes");
-    } else if (values.subcategory.toLowerCase().includes("pant") || values.subcategory.toLowerCase().includes("jean") || values.subcategory.toLowerCase().includes("trouser")) {
+    const targetCat = values.subcategory || values.category;
+    const type = getSizeTypeForCategory(targetCat);
+    if (type === "WAIST") {
       setActiveSizePreset("pants");
+    } else if (type === "SHOE") {
+      setActiveSizePreset("shoes");
+    } else if (values.gender === "Kids") {
+      setActiveSizePreset("kids");
+    } else {
+      setActiveSizePreset("apparel");
     }
   }, [values.gender, values.category, values.subcategory]);
+
 
   function update<K extends keyof ProductFormValues>(key: K, value: ProductFormValues[K]) {
     setValues((current) => ({

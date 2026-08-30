@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { orderService } from "@/services/orderService";
 import { Order } from "@/types";
@@ -18,239 +19,284 @@ import {
   Bell,
   Shield,
   LogOut,
-  Zap,
-  Smartphone,
-  Globe,
   FileText,
   HelpCircle,
   MessageSquare,
-  Building2,
-  Mail,
-  ArrowRight,
+  ArrowUpRight,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function AccountOverviewPage() {
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const { logout } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const wishlistCount = useWishlistStore((s) => s.productIds.length);
 
   useEffect(() => {
     if (!user) return;
+    // Role-based navigation check: Admin users must be redirected to Admin Dashboard
+    if (user.role === "ADMIN") {
+      router.replace("/admin");
+      return;
+    }
     orderService.getOrders(user.id).then(setOrders);
-  }, [user]);
+  }, [user, router]);
 
-  if (!user) return null;
+  if (!user || user.role === "ADMIN") return null;
 
-  const userEmail = user.email || "anandsri682@gmail.com";
+  const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() || "U";
+  const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Maison Client";
 
   return (
-    <div className="space-y-4 pb-20 bg-slate-50 min-h-screen p-2 sm:p-4">
-      {/* 1. Top Card: Membership Banner */}
-      <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5 shadow-xs relative">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-slate-900 truncate max-w-[220px]">
-            {userEmail}
-          </h2>
-          <div className="flex items-center gap-1 bg-amber-100/80 px-2.5 py-1 rounded-full border border-amber-200 text-amber-900 font-bold text-xs">
-            <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-            <span>0</span>
+    <div className="space-y-6 pb-24 max-w-xl mx-auto px-1 sm:px-0">
+      {/* 1. Compact Profile Header */}
+      <div className="rounded-2xl border border-stone/50 bg-paper-pure p-4 shadow-subtle flex items-center justify-between">
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-white font-editorial font-bold text-base shadow-xs">
+            {initials}
+          </div>
+          <div className="min-w-0">
+            <h1 className="font-editorial text-lg font-bold text-ink truncate">{fullName}</h1>
+            <p className="text-xs text-ash font-mono truncate">{user.email}</p>
           </div>
         </div>
-
-        <p className="mt-2 text-xs text-slate-600 font-normal leading-relaxed max-w-xs">
-          Enjoy FREE Maison Noir Privé, Early Access to sale and more with Black.
-        </p>
-
-        <button className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-slate-950 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-sm">
-          <span>Explore</span>
-          <span className="font-extrabold text-amber-400 tracking-wider">BLACK</span>
-        </button>
+        <Link
+          href="/account/settings"
+          className="flex items-center gap-1 text-xs font-bold text-primary hover:underline shrink-0 ml-2"
+        >
+          <span>View Profile</span>
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
 
-      {/* 2. 4 Quick Action Cards (2x2 Grid) */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* 2. Quick Actions (2-Column Mobile Grid) */}
+      <div>
+        <h2 className="text-[11px] font-bold font-mono uppercase tracking-widest text-ash mb-2.5 px-1">
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            href="/account/orders"
+            className="flex items-center gap-3 rounded-xl border border-stone/60 bg-paper-pure p-3.5 shadow-xs hover:border-primary transition-all group"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-stone/40 text-ink group-hover:bg-primary group-hover:text-white transition-colors">
+              <Package className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-ink block truncate">Orders</span>
+              <span className="text-[10px] text-ash font-mono">{orders?.length ?? 0} Placed</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/wishlist"
+            className="flex items-center gap-3 rounded-xl border border-stone/60 bg-paper-pure p-3.5 shadow-xs hover:border-primary transition-all group"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-stone/40 text-ink group-hover:bg-primary group-hover:text-white transition-colors">
+              <Heart className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-ink block truncate">Wishlist</span>
+              <span className="text-[10px] text-ash font-mono">{wishlistCount} Saved</span>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-3 rounded-xl border border-stone/60 bg-paper-pure p-3.5 shadow-xs hover:border-primary transition-all cursor-pointer group">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-stone/40 text-ink group-hover:bg-primary group-hover:text-white transition-colors">
+              <Ticket className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-ink block truncate">Coupons</span>
+              <span className="text-[10px] text-ash font-mono">2 Available</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 rounded-xl border border-stone/60 bg-paper-pure p-3.5 shadow-xs hover:border-primary transition-all cursor-pointer group">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-stone/40 text-ink group-hover:bg-primary group-hover:text-white transition-colors">
+              <Headphones className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-ink block truncate">Help Center</span>
+              <span className="text-[10px] text-ash font-mono">24x7 Support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Account Settings List */}
+      <div className="rounded-xl border border-stone/60 bg-paper-pure overflow-hidden shadow-xs divide-y divide-stone/40">
+        <div className="bg-stone/30 px-4 py-2.5 text-[10px] font-mono font-bold uppercase tracking-widest text-ash">
+          Account Settings
+        </div>
+
+        <Link
+          href="/account/settings"
+          className="flex min-h-[56px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <User className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Edit Profile</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </Link>
+
+        <Link
+          href="/account/addresses"
+          className="flex min-h-[56px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <MapPin className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Saved Addresses</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </Link>
+
+        <div className="flex min-h-[56px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <CreditCard className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Saved Cards &amp; Payment Methods</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </div>
+
+        <div className="flex min-h-[56px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <Bell className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Notification Settings</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </div>
+
+        <div className="flex min-h-[56px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <Shield className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Privacy &amp; Security</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </div>
+      </div>
+
+      {/* 4. My Activity */}
+      <div className="rounded-xl border border-stone/60 bg-paper-pure overflow-hidden shadow-xs divide-y divide-stone/40">
+        <div className="bg-stone/30 px-4 py-2.5 text-[10px] font-mono font-bold uppercase tracking-widest text-ash">
+          My Activity
+        </div>
+
         <Link
           href="/account/orders"
-          className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:border-blue-400 transition-all group"
+          className="flex min-h-[52px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
-            <Package className="h-5 w-5" />
+          <div className="flex items-center gap-3">
+            <Package className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">My Orders</span>
           </div>
-          <div>
-            <span className="text-xs font-bold text-slate-900 block">Orders</span>
-            <span className="text-[10px] text-slate-500 font-mono">{orders?.length ?? 0} Items</span>
-          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
         </Link>
 
-        <Link
-          href="/wishlist"
-          className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:border-blue-400 transition-all group"
-        >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
-            <Heart className="h-5 w-5" />
+        <div className="flex min-h-[52px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <FileText className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">My Reviews</span>
           </div>
-          <div>
-            <span className="text-xs font-bold text-slate-900 block">Wishlist</span>
-            <span className="text-[10px] text-slate-500 font-mono">{wishlistCount} Items</span>
-          </div>
-        </Link>
-
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:border-blue-400 transition-all cursor-pointer group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
-            <Ticket className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="text-xs font-bold text-slate-900 block">Coupons</span>
-            <span className="text-[10px] text-slate-500 font-mono">2 Available</span>
-          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
         </div>
 
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:border-blue-400 transition-all cursor-pointer group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:scale-105 transition-transform">
-            <Headphones className="h-5 w-5" />
+        <div className="flex min-h-[52px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <MessageSquare className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Questions &amp; Answers</span>
           </div>
-          <div>
-            <span className="text-xs font-bold text-slate-900 block">Help Center</span>
-            <span className="text-[10px] text-slate-500 font-mono">24x7 Support</span>
-          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
         </div>
       </div>
 
-      {/* 3. Add/Verify Email Banner */}
-      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-2xs">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-            <Mail className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs font-bold text-slate-900">Add/Verify your Email</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-rose-600 animate-ping" />
-            </div>
-            <span className="text-[11px] text-slate-500 block">Get latest updates of your orders</span>
-          </div>
+      {/* 5. Help & Information */}
+      <div className="rounded-xl border border-stone/60 bg-paper-pure overflow-hidden shadow-xs divide-y divide-stone/40">
+        <div className="bg-stone/30 px-4 py-2.5 text-[10px] font-mono font-bold uppercase tracking-widest text-ash">
+          Help &amp; Information
         </div>
-        <button className="px-4 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 transition-colors shadow-xs">
-          Update
+
+        <div className="flex min-h-[52px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <HelpCircle className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Help Center &amp; Support</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </div>
+
+        <div className="flex min-h-[52px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <FileText className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Terms &amp; Conditions</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </div>
+
+        <div className="flex min-h-[52px] items-center justify-between px-4 py-3 hover:bg-stone/20 transition-colors cursor-pointer">
+          <div className="flex items-center gap-3">
+            <Shield className="h-4 w-4 text-ash shrink-0" />
+            <span className="text-xs font-bold text-ink">Privacy Policy</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-ash" />
+        </div>
+      </div>
+
+      {/* 6. Logout Action Button */}
+      <div className="pt-2">
+        <button
+          onClick={() => setShowLogoutModal(true)}
+          className="w-full rounded-xl border border-error/30 bg-error/5 py-3 text-xs font-bold text-error hover:bg-error hover:text-white transition-all flex items-center justify-center gap-2 shadow-xs"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Logout from Account</span>
         </button>
       </div>
 
-      {/* 4. Account Settings List */}
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xs divide-y divide-slate-100">
-
-        <div className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
-          <div className="flex items-center gap-3">
-            <Smartphone className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Manage Devices</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </div>
-
-        <Link href="/account/settings" className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors">
-          <div className="flex items-center gap-3">
-            <User className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Edit Profile</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </Link>
-
-        <div className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
-          <div className="flex items-center gap-3">
-            <CreditCard className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Saved Credit / Debit &amp; Gift Cards</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </div>
-
-        <Link href="/account/addresses" className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors">
-          <div className="flex items-center gap-3">
-            <MapPin className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Saved Addresses</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </Link>
-
-        <div className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
-          <div className="flex items-center gap-3">
-            <Globe className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Select Language</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </div>
-
-        <div className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
-          <div className="flex items-center gap-3">
-            <Bell className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Notification Settings</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </div>
-
-        <div className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
-          <div className="flex items-center gap-3">
-            <Shield className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium text-slate-800">Privacy Center</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </div>
-      </div>
-
-      {/* 6. My Activity Section */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs space-y-3">
-        <h3 className="text-sm font-bold text-slate-900">My Activity</h3>
-        <div className="space-y-2 divide-y divide-slate-100">
-          <div className="flex items-center justify-between pt-1 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <FileText className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium text-slate-800">Reviews</span>
+      {/* Logout Confirmation Dialog */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="w-full max-w-xs rounded-2xl bg-white p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-stone/40 pb-3">
+              <h3 className="font-editorial text-base font-bold text-ink">Confirm Logout</h3>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="p-1 text-ash hover:text-ink rounded-full"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
-          </div>
 
-          <div className="flex items-center justify-between pt-3 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <MessageSquare className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium text-slate-800">Questions &amp; Answers</span>
+            <p className="text-xs text-graphite font-body leading-relaxed">
+              Are you sure you want to sign out of your Maison Noir account?
+            </p>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 text-xs font-bold text-ash hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutModal(false);
+                  logout();
+                }}
+                className="rounded-xl bg-error px-4 py-2 text-xs font-bold text-white hover:bg-error/90 transition-colors shadow-xs"
+              >
+                Sign Out
+              </button>
             </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
           </div>
         </div>
-      </div>
-
-      {/* 7. Feedback & Information Section */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs space-y-3">
-        <h3 className="text-sm font-bold text-slate-900">Feedback &amp; Information</h3>
-        <div className="space-y-2 divide-y divide-slate-100">
-          <div className="flex items-center justify-between pt-1 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <FileText className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium text-slate-800">Terms, Policies and Licenses</span>
-            </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
-          </div>
-
-          <div className="flex items-center justify-between pt-3 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <HelpCircle className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium text-slate-800">Browse FAQs</span>
-            </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
-          </div>
-        </div>
-      </div>
-
-      {/* Logout Button */}
-      <button
-        onClick={logout}
-        className="w-full rounded-xl border border-rose-200 bg-rose-50 py-3 text-xs font-bold text-rose-600 hover:bg-rose-100 transition-colors flex items-center justify-center gap-2 shadow-2xs"
-      >
-        <LogOut className="h-4 w-4" /> Logout
-      </button>
+      )}
     </div>
   );
 }
+
 
 
 
