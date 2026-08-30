@@ -57,23 +57,6 @@ export function Navbar() {
 
   return (
     <>
-      {/* Admin Return Floating Bar */}
-      {user?.role === "ADMIN" && (
-        <div className="bg-slate-900 text-white px-6 py-2 text-xs font-mono font-bold flex items-center justify-between z-50 border-b border-slate-800 shadow-md">
-          <div className="flex items-center gap-2 text-rose-400">
-            <ShieldCheck className="h-4 w-4 shrink-0" />
-            <span>ADMINISTRATOR MODE: Browsing Storefront</span>
-          </div>
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1.5 bg-rose-600 px-3.5 py-1 rounded-lg text-xs font-bold text-white hover:bg-rose-700 transition-colors shadow-xs"
-          >
-            <span>Admin Dashboard</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      )}
-
       <header
         className={cn(
           "sticky top-0 z-40 w-full transition-all duration-300 hidden lg:block",
@@ -82,6 +65,7 @@ export function Navbar() {
             : "bg-paper-pure border-b border-stone/30 py-5"
         )}
       >
+
 
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Mobile Menu Toggle */}

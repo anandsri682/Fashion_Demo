@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, TrendingUp, History, ArrowRight } from "lucide-react";
+import { Search, X, TrendingUp, History, ArrowRight, ArrowLeft } from "lucide-react";
 import { productService } from "@/services/productService";
 import { Product } from "@/types";
 import { getImageUrl } from "@/lib/api";
@@ -10,14 +10,18 @@ import { formatCurrency } from "@/lib/format";
 import Image from "next/image";
 
 const POPULAR_SEARCHES = [
+  "Shirts",
   "T-Shirts",
-  "Oversized Shirts",
   "Jeans",
   "Dresses",
+  "Pants",
   "Jackets",
-  "Shoes",
+  "Kurtas",
   "Accessories",
+  "New Arrivals",
+  "Sale",
 ];
+
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -102,9 +106,17 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-ink/90 backdrop-blur-md transition-all duration-300 animate-fadeIn">
       {/* Search Header */}
-      <div className="border-b border-stone/20 bg-paper-pure px-4 py-6 sm:px-8">
-        <div className="container-x flex items-center gap-4">
-          <Search className="h-6 w-6 text-primary shrink-0" />
+      <div className="border-b border-stone/20 bg-paper-pure px-4 py-4 sm:px-8">
+        <div className="container-x flex items-center gap-3">
+          <button
+            onClick={onClose}
+            className="p-1.5 text-ink hover:text-rose-600 transition-colors rounded-full hover:bg-slate-100"
+            aria-label="Back to store"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+
+          <Search className="h-5 w-5 text-primary shrink-0" />
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -117,10 +129,11 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for products, categories, styles (e.g., 'T-Shirt', 'Jeans')..."
-              className="w-full bg-transparent text-lg sm:text-xl font-body text-ink placeholder:text-ash outline-none"
+              placeholder="Search for products, categories, styles..."
+              className="w-full bg-transparent text-base sm:text-lg font-body text-ink placeholder:text-ash outline-none"
             />
           </form>
+
           {query && (
             <button
               onClick={() => setQuery("")}

@@ -2,14 +2,13 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
 import { isValidEmail, isValidPhone, passwordStrength } from "@/lib/validation";
-import { cn } from "@/lib/cn";
-import { Sparkles } from "lucide-react";
+import { useSettingsStore } from "@/store/settingsStore";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
+
   const { register, loading, error } = useAuth();
   const [form, setForm] = useState({
     firstName: "",
@@ -20,6 +19,10 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+
+  const settings = useSettingsStore((s) => s.settings);
+  const storeName = settings.storeName || "MAISON NOIR";
 
   const strength = passwordStrength(form.password);
 
@@ -29,10 +32,10 @@ export default function RegisterPage() {
 
   function validate(): boolean {
     const errs: Record<string, string> = {};
-    if (!form.firstName) errs.firstName = "Required";
-    if (!form.lastName) errs.lastName = "Required";
+    if (!form.firstName.trim()) errs.firstName = "Required";
+    if (!form.lastName.trim()) errs.lastName = "Required";
     if (!isValidEmail(form.email)) errs.email = "Enter a valid email";
-    if (!isValidPhone(form.phone)) errs.phone = "Enter a valid 10-digit phone number";
+    if (form.phone && !isValidPhone(form.phone)) errs.phone = "Enter a valid 10-digit phone number";
     if (form.password.length < 8) errs.password = "At least 8 characters";
     if (form.password !== form.confirmPassword) errs.confirmPassword = "Passwords do not match";
     setFieldErrors(errs);
@@ -46,93 +49,167 @@ export default function RegisterPage() {
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
-      phone: form.phone,
+      phone: form.phone || "9876543210",
       password: form.password,
     });
   }
 
   return (
-    <div className="container-x flex min-h-[85vh] items-center justify-center py-20">
-      <div className="w-full max-w-lg border border-stone/60 bg-paper p-8 sm:p-10 shadow-subtle relative overflow-hidden">
-        {/* Top brass accent line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-brass" />
-
-        <div className="text-center">
-          <div className="inline-flex items-center gap-1.5 text-brass text-[10px] uppercase tracking-widest2 font-semibold mb-2">
-            <Sparkles className="h-3 w-3" />
-            <span>Maison Noir Private Ledger</span>
+    <div className="flex min-h-[85vh] items-center justify-center py-10 px-4 sm:px-6 bg-slate-50/50">
+      <div className="w-full max-w-lg rounded-2xl border border-stone/60 bg-paper-pure p-6 sm:p-10 shadow-subtle space-y-6">
+        {/* Brand Header */}
+        <div className="text-center space-y-1">
+          <Link href="/" className="inline-flex flex-col items-center">
+            <span className="font-editorial text-2xl font-extrabold tracking-[0.2em] uppercase text-ink">
+              {storeName}
+            </span>
+            <span className="text-[9px] tracking-[0.35em] uppercase text-rose-600 font-sans font-bold -mt-0.5">
+              HAUTE COUTURE
+            </span>
+          </Link>
+          <div className="pt-4">
+            <h1 className="font-editorial text-2xl sm:text-3xl font-bold text-ink">Create your account</h1>
+            <p className="text-xs text-ash mt-1 font-body">Join us for a better luxury shopping experience</p>
           </div>
-          <h1 className="font-editorial text-3xl sm:text-4xl font-light text-ink">Create Private Account</h1>
-          <p className="mt-2 text-xs text-ash">Register for exclusive collection invitations and fast checkout</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input label="First Name" value={form.firstName} onChange={(e) => update("firstName", e.target.value)} error={fieldErrors.firstName} placeholder="Henriette" />
-          <Input label="Last Name" value={form.lastName} onChange={(e) => update("lastName", e.target.value)} error={fieldErrors.lastName} placeholder="Dupont" />
-          <div className="sm:col-span-2">
-            <Input label="Email Address" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} error={fieldErrors.email} placeholder="h.dupont@maisonnoir.com" />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* First Name */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold font-mono text-graphite block uppercase tracking-wider">
+                First Name
+              </label>
+              <input
+                type="text"
+                required
+                value={form.firstName}
+                onChange={(e) => update("firstName", e.target.value)}
+                placeholder="Henriette"
+                className="w-full rounded-xl border border-stone bg-paper px-4 py-3 text-xs text-ink focus:border-rose-600 focus:outline-none"
+              />
+              {fieldErrors.firstName && <span className="text-[10px] text-rose-600 font-bold">{fieldErrors.firstName}</span>}
+            </div>
+
+            {/* Last Name */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold font-mono text-graphite block uppercase tracking-wider">
+                Last Name
+              </label>
+              <input
+                type="text"
+                required
+                value={form.lastName}
+                onChange={(e) => update("lastName", e.target.value)}
+                placeholder="Dupont"
+                className="w-full rounded-xl border border-stone bg-paper px-4 py-3 text-xs text-ink focus:border-rose-600 focus:outline-none"
+              />
+              {fieldErrors.lastName && <span className="text-[10px] text-rose-600 font-bold">{fieldErrors.lastName}</span>}
+            </div>
           </div>
-          <div className="sm:col-span-2">
-            <Input label="Phone Number" value={form.phone} onChange={(e) => update("phone", e.target.value)} error={fieldErrors.phone} placeholder="9876543210" />
-          </div>
-          <div className="sm:col-span-2">
-            <Input
-              label="Password"
-              type="password"
-              value={form.password}
-              onChange={(e) => update("password", e.target.value)}
-              error={fieldErrors.password}
-              placeholder="Minimum 8 characters"
+
+          {/* Email */}
+          <div className="space-y-1">
+            <label className="text-xs font-bold font-mono text-graphite block uppercase tracking-wider">
+              Email Address
+            </label>
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={(e) => update("email", e.target.value)}
+              placeholder="name@domain.com"
+              className="w-full rounded-xl border border-stone bg-paper px-4 py-3 text-xs text-ink focus:border-rose-600 focus:outline-none"
             />
-            {form.password && (
-              <div className="mt-2">
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "h-1 flex-1 transition-all duration-300",
-                        i < strength.score ? (strength.label === "Weak" ? "bg-error" : strength.label === "Fair" ? "bg-brass" : "bg-brass-dark") : "bg-stone"
-                      )}
-                    />
-                  ))}
-                </div>
-                <p className="mt-1 text-[10px] text-ash font-mono uppercase tracking-wide">
-                  Security Rating: <span className="text-ink font-semibold">{strength.label}</span>
-                </p>
+            {fieldErrors.email && <span className="text-[10px] text-rose-600 font-bold">{fieldErrors.email}</span>}
+          </div>
+
+          {/* Phone */}
+          <div className="space-y-1">
+            <label className="text-xs font-bold font-mono text-graphite block uppercase tracking-wider">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => update("phone", e.target.value)}
+              placeholder="9876543210"
+              className="w-full rounded-xl border border-stone bg-paper px-4 py-3 text-xs text-ink focus:border-rose-600 focus:outline-none"
+            />
+            {fieldErrors.phone && <span className="text-[10px] text-rose-600 font-bold">{fieldErrors.phone}</span>}
+          </div>
+
+          {/* Password */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-xs font-bold font-mono text-graphite block uppercase tracking-wider">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={form.password}
+                  onChange={(e) => update("password", e.target.value)}
+                  placeholder="Min 8 chars"
+                  className="w-full rounded-xl border border-stone bg-paper px-4 py-3 text-xs text-ink focus:border-rose-600 focus:outline-none pr-8"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ash hover:text-ink"
+                >
+                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
               </div>
-            )}
-          </div>
-          <div className="sm:col-span-2">
-            <Input
-              label="Confirm Password"
-              type="password"
-              value={form.confirmPassword}
-              onChange={(e) => update("confirmPassword", e.target.value)}
-              error={fieldErrors.confirmPassword}
-              placeholder="Re-enter your password"
-            />
+              {fieldErrors.password && <span className="text-[10px] text-rose-600 font-bold">{fieldErrors.password}</span>}
+            </div>
+
+            {/* Confirm Password */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold font-mono text-graphite block uppercase tracking-wider">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                required
+                value={form.confirmPassword}
+                onChange={(e) => update("confirmPassword", e.target.value)}
+                placeholder="Re-enter password"
+                className="w-full rounded-xl border border-stone bg-paper px-4 py-3 text-xs text-ink focus:border-rose-600 focus:outline-none"
+              />
+              {fieldErrors.confirmPassword && <span className="text-[10px] text-rose-600 font-bold">{fieldErrors.confirmPassword}</span>}
+            </div>
           </div>
 
           {error && (
-            <div className="sm:col-span-2 border border-error/30 bg-error/5 p-3 text-xs text-error font-medium text-center">
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-600 font-bold text-center">
               {error}
             </div>
           )}
 
-          <Button type="submit" variant="gold" size="lg" loading={loading} className="mt-3 w-full sm:col-span-2 justify-center">
-            Create Account & Private Ledger
-          </Button>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-rose-600 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-700 transition-all shadow-md active:scale-98 flex items-center justify-center gap-2"
+          >
+            <span>{loading ? "Creating..." : "CREATE ACCOUNT"}</span>
+            {!loading && <ArrowRight className="h-4 w-4" />}
+          </button>
         </form>
 
-        <p className="mt-8 text-center text-xs text-ash pt-6 border-t border-stone/50">
-          Already have an account?{" "}
-          <Link href="/login" className="text-ink font-semibold hover:text-brass transition-colors hover-underline-gold">
-            Sign In Here
-          </Link>
-        </p>
+        <div className="pt-4 text-center border-t border-stone/50">
+          <p className="text-xs text-ash">
+            Already have an account?{" "}
+            <Link href="/login" className="font-bold text-rose-600 hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
+
 
