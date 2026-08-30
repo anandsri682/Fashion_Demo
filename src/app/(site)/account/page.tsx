@@ -137,47 +137,9 @@ export default function AccountOverviewPage() {
         </button>
       </div>
 
-      {/* 4. Finance Options */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs space-y-4">
-        <h3 className="text-sm font-bold text-slate-900">Finance Options</h3>
-        <div className="space-y-3 divide-y divide-slate-100">
-          <div className="flex items-center justify-between pt-1 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-5 w-5 text-blue-600 shrink-0" />
-              <div>
-                <p className="text-xs font-bold text-slate-900">Maison Personal Credit</p>
-                <p className="text-[11px] text-slate-500">₹10,000 | Instant approval, 0 paper</p>
-              </div>
-            </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
-          </div>
-
-          <div className="flex items-center justify-between pt-3 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <Building2 className="h-5 w-5 text-blue-600 shrink-0" />
-              <div>
-                <p className="text-xs font-bold text-slate-900">Maison EMI - Only for you!</p>
-                <p className="text-[11px] text-slate-500">Upto ₹750 off | No Cost EMI*</p>
-              </div>
-            </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
-          </div>
-
-          <div className="flex items-center justify-between pt-3 cursor-pointer">
-            <div className="flex items-center gap-3">
-              <Ticket className="h-5 w-5 text-blue-600 shrink-0" />
-              <div>
-                <p className="text-xs font-bold text-slate-900">Apply Now for Maison Privilege Card</p>
-                <p className="text-[11px] text-slate-500">5% Cashback | ₹1,500 Gift Vouchers</p>
-              </div>
-            </div>
-            <ChevronRight className="h-4 w-4 text-slate-400" />
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Account Settings List */}
+      {/* 4. Account Settings List */}
       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xs divide-y divide-slate-100">
+
         <div className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
           <div className="flex items-center gap-3">
             <Smartphone className="h-4 w-4 text-blue-600" />
